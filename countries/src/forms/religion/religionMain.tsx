@@ -52,15 +52,27 @@ const ReligionMain = () => {
 
         <input type="submit" value="Submit" />
       </form>
+      <table>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Action</th>
+      </tr>
       {
+
             data.map(({id, name, description}: IReligion) => 
             {
               return (
-                <p id={id.toString()}>
-                  {name} : {description} <button onClick={(e: any) => {deleteReligion(id)}}>Delete</button>
-                </p>)
+                <tr>
+                  <td>{name}</td>
+                  <td>{description} </td>
+                  <td><button onClick={(e: any) => {deleteReligion(id)}}>Delete</button></td>
+                  </tr>
+                )
             })
+            
           }
+        </table>
     </div>
   );
 }

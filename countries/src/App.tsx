@@ -4,15 +4,34 @@ import CityMain from './forms/city/cityMain';
 import LanguageMain from './forms/language/languageMain';
 import ReligionMain from './forms/religion/religionMain';
 import CurrencyMain from './forms/currency/currencyMain';
+import { Grid } from '@mui/material';
+import CountryMain from './forms/country/countryMain';
+
 
 const App = () => {
   return (
     <div className="App">
-      <ContinentMain/>
-      <CityMain/>
-      <ReligionMain/>
+      <Grid container spacing={3} >
+        <Grid item xs={4}>
+          <ContinentMain/>
+        </Grid>
+        <Grid item xs={4}>
+        <LanguageMain/>
+        </Grid>
+        <Grid item xs={4}>
+        <ReligionMain/>
+        </Grid>
+      </Grid>
+      <Grid container spacing={2} >
+      <Grid item xs={6}>
       <CurrencyMain/>
-      <LanguageMain/>
+      </Grid>
+      <Grid item xs={6}>
+      <CityMain/>
+      </Grid>
+      </Grid>
+
+      <CountryMain/>
     </div>
   );
 }
