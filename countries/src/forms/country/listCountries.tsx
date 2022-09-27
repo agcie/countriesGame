@@ -68,11 +68,13 @@ const ListCountries = () => {
                               <td>{x.full_name} </td>
                               <td>{x.capital_city.name} </td>
                               <td>{x.continent.name} </td>
-                              {x.language.map((y: any) => {
+                              <td>{x.language.map((y: any) => {
                               return (<p> {y.name} </p>);
-                              })}
-                              <td>{x.full_name} </td>
-                              <td>{x.full_name} </td>
+                              })}</td>
+                              <td>{x.religion.map((y: any) => {
+                              return (<p> {y.name} </p>);
+                              })}</td>
+                              
                               <td><button onClick={(e: any) => {deleteCountry(x.id)}}>Delete</button></td>
                               </tr>
                             )
