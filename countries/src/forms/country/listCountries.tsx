@@ -49,7 +49,6 @@ const ListCountries = () => {
                     <th>Language</th>
                     <th>Religion</th>
                     <th>Currency</th>
-                    <th>Action</th>
                     <th>Area</th>
                     <th>Population</th>
                     <th>GDP</th>
@@ -74,7 +73,13 @@ const ListCountries = () => {
                               <td>{x.religion.map((y: any) => {
                               return (<p> {y.name} </p>);
                               })}</td>
-                              
+                              <td>{x.currency.name}</td>
+                              <td>{x.area}</td>
+                              <td>{x.population}</td>
+                              <td>{x.GDP}</td>
+                              <td>{x.web_domain}</td>
+                              <td>{x.calling_code}</td>
+                              <td>{String(x.driving_on_right)}</td>
                               <td><button onClick={(e: any) => {deleteCountry(x.id)}}>Delete</button></td>
                               </tr>
                             )
