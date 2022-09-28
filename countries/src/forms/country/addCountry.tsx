@@ -101,8 +101,8 @@ const AddCountry = () => {
             })
         axios.post(`${baseurl}countries/`,
             {
-            name: name,
-            full_name: fullName,
+            name: (name.toLowerCase()),
+            full_name: (fullName.toLowerCase()),
             capital_city: Number(selectedCity),
             area: area,
             population: population,
@@ -110,7 +110,7 @@ const AddCountry = () => {
             GDP: GDP,
             continent: selectedContinent,
             language: selectedLanguage,
-            web_domain: webDomain,
+            web_domain: (webDomain.toLowerCase()),
             calling_code: callingCode,
             religion: selectedReligion,
             driving_on_right: driving,

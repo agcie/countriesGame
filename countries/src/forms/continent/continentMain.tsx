@@ -27,7 +27,7 @@ const ContinentMain = () => {
     console.log(continent)
     axios.post(`${baseurl}continents/`,
       {
-        name: continent
+        name: (continent.toLowerCase())
       }
     )
     .then((respone) => console.log(respone))
@@ -35,15 +35,13 @@ const ContinentMain = () => {
   }
 
   const handleChange= (e:  React.ChangeEvent<HTMLInputElement>) =>{
-    setContinent(e.currentTarget.value)
+    setContinent((e.currentTarget.value))
   }
 
   const deleteContinent = (id: number) =>{
     console.log("deleting", `${baseurl}continents/`+id.toString())
     axios.delete("http://127.0.0.1:8000/continents/"+id.toString())
   }
-  const [selected, setSelected] = useState(1);
-
 
   const rows = 
         data.map((x: IContinent) => 

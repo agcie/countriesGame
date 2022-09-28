@@ -30,9 +30,9 @@ const CurrencyMain = () => {
     e.preventDefault();
     axios.post(`${baseurl}currencies/`,
       {
-        name: name,
-        subunit: subunit,
-        code: code,
+        name: (name.toLowerCase()),
+        subunit: (subunit.toLowerCase()),
+        code: (code.toUpperCase()),
         symbol: symbol
       }
     )

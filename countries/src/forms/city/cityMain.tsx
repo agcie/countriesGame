@@ -30,7 +30,7 @@ const CityMain = () => {
     e.preventDefault();
     axios.post(`${baseurl}cities/`,
       {
-        name: name,
+        name: (name.toLowerCase()),
         population: population,
         latitude: latitude,
         longitude: longitude

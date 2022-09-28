@@ -35,7 +35,7 @@ const LanguageMain = () => {
     e.preventDefault();
     axios.post(`${baseurl}languages/`,
       {
-        name: name
+        name: (name.toLowerCase())
       }
     )
   }

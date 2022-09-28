@@ -31,7 +31,7 @@ const ReligionMain = () => {
     e.preventDefault();
     axios.post(`${baseurl}religions/`,
       {
-        name: name,
+        name: (name.toLowerCase()),
         description: description,
       }
     )
