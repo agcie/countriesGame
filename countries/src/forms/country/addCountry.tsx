@@ -175,7 +175,7 @@ const AddCountry = () => {
 
         <label> Name: <input type="text" onChange={e=>setName(e.target.value)}></input> </label> <br/>
         <label> Full Name: <input type="text" onChange={e=>setFullName(e.target.value)}></input> </label><br/>
-        <label> Area: <input type="number" onChange={e=>setArea(Number(e.target.value))}></input> </label><br/>
+        <label> Area: <input type="text" onChange={e=>setArea(Number(e.target.value))}></input> </label><br/>
         <label> Population: <input type="number" onChange={e=>setPopulation(Number(e.target.value))}></input> </label><br/>
         <label> GDP: <input type="text" onChange={e=>setGDP(Number(e.target.value))}></input> </label><br/>
         <label> Web Domain: <input type="text" onChange={e=>setWebDomain(e.target.value)}></input> </label><br/>
