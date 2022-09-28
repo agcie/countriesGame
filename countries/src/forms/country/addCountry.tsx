@@ -29,6 +29,7 @@ const AddCountry = () => {
     const [callingCode, setCallingCode] = useState("");
     const [driving, setDriving] = useState(true);
     const [flagUrl, setFlagUrl] = useState("");
+    const [diff, setDiff] = useState(1);
     const [err, setErr] = useState("");
 
     useEffect(() => {
@@ -97,7 +98,8 @@ const AddCountry = () => {
             calling_code: callingCode,
             religion: [selectedReligion],
             driving_on_right: driving,
-            flag_url: flagUrl
+            flag_url: flagUrl,
+            difficulty: diff,
             })
         axios.post(`${baseurl}countries/`,
             {
@@ -114,11 +116,16 @@ const AddCountry = () => {
             calling_code: callingCode,
             religion: selectedReligion,
             driving_on_right: driving,
-            flag_url: flagUrl
+            flag_url: ("https://countryflagsapi.com/svg/" + flagUrl),
+            difficulty: diff,
             }
         )
         .then((respone) => console.log(respone))
         .catch((err) => setErr(err))
+        }
+
+        const handleChange= (e: any) =>{
+          setDiff(Number(e.currentTarget.value))
         }
 
           
@@ -170,7 +177,7 @@ const AddCountry = () => {
         <label> Full Name: <input type="text" onChange={e=>setFullName(e.target.value)}></input> </label><br/>
         <label> Area: <input type="number" onChange={e=>setArea(Number(e.target.value))}></input> </label><br/>
         <label> Population: <input type="number" onChange={e=>setPopulation(Number(e.target.value))}></input> </label><br/>
-        <label> GDP: <input type="number" onChange={e=>setGDP(Number(e.target.value))}></input> </label><br/>
+        <label> GDP: <input type="text" onChange={e=>setGDP(Number(e.target.value))}></input> </label><br/>
         <label> Web Domain: <input type="text" onChange={e=>setWebDomain(e.target.value)}></input> </label><br/>
         <label> Calling Code: <input type="text" onChange={e=>setCallingCode(e.target.value)}></input> </label><br/>
 
@@ -178,10 +185,49 @@ const AddCountry = () => {
         <label>Driving onright? <input type="checkbox" checked={driving}  
           onChange={() => setDriving((prev) => !prev)}/> </label><br/>
 
+<p>Select difficulty:</p>
+        
+        <ul>
+          <li>
+            <label>
+              <input type="radio" 
+                value={1}
+                checked={diff === 1}
+                onChange={handleChange}
+              />
+              Easy
+            </label>
+          </li>
+          
+          <li>
+            <label>
+              <input
+                type="radio"
+                value={2}
+                checked={diff === 2}
+                onChange={handleChange}
+              />
+              Medium
+            </label>
+          </li>
+
+          <li>
+            <label>
+              <input
+                type="radio"
+                value={3}
+                checked={diff === 3}
+                onChange={handleChange}
+              />
+              Hard
+            </label>
+          </li>
+        </ul>
+
         {/* name: {name}, full name: {fullName}, area: {area}, population: {population}, gdp: {GDP}, webDomain : {webDomain}, 
         calling code : {callingCode}, flagUrl: {flagUrl} */}
 
-{selectedCity}
+
         <input type="submit" value="Submit" />
       </form>
       {err.toString()}

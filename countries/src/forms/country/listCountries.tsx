@@ -54,6 +54,7 @@ const ListCountries = () => {
                 call_code: x.calling_code,
                 driving_on_right: (x.driving_on_right ? 'Right' : 'Left'),
                 flag: x.flag_url,
+                diff: x.difficulty,
                 delete: x.id,
               }
             )
@@ -74,7 +75,8 @@ const ListCountries = () => {
         { field: 'web_domain', headerName: 'Domain', width: 60 },
         { field: 'call_code', headerName: 'Call Code', width: 100 },
         { field: 'driving_on_right', headerName: 'Driving Side', width: 100 },
-        { field: 'flag', headerName: 'Flag', width: 80, renderCell: (params) => <img src={params.value} /> },
+        { field: 'flag', headerName: 'Flag', width: 80, renderCell: (params) => <img width={70} src={params.value} /> },
+        { field: 'diff', headerName: 'Difficulty', width: 50 },
         { field: 'delete', headerName: 'Delete', width: 100, renderCell: (params) => 
         <Button size="small" onClick={(e: any) => {deleteCountry(params.value)}} variant="contained"><DeleteIcon /></Button> },
       ];

@@ -20,6 +20,7 @@ interface ICountry{
     calling_code: string;
     driving_on_right: boolean;
     flag_url: string;
+    difficulty: number;
   }
 
   export default ICountry;
