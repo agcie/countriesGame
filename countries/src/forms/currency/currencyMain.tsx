@@ -2,6 +2,9 @@
 import axios, { AxiosResponse } from 'axios';
 import React, { useEffect, useState } from 'react';
 import ICurrency from '../../api-ifc/ICurrency';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import Button from '@mui/material/Button';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const baseurl ="http://127.0.0.1:8000/";
 
@@ -54,6 +57,31 @@ const CurrencyMain = () => {
     axios.delete("http://127.0.0.1:8000/currencies/"+id.toString())
   }
 
+  const rows = 
+    data.map((x: ICurrency) => 
+    {
+      return (
+        {
+          id: x.id,
+          name: x.name,
+          symbol: x.symbol,
+          subunit: x.subunit,
+          code: x.code,
+          delete: x.id,
+        }
+      )
+    })
+
+  const columns: GridColDef[] = [
+    { field: 'id', headerName: 'Id', width: 30 },
+    { field: 'name', headerName: 'Name', width: 100 },
+    { field: 'symbol', headerName: 'Symbol', width: 100 },
+    { field: 'subunit', headerName: 'Subunit', width: 100 },
+    { field: 'code', headerName: 'Code', width: 100 },
+    { field: 'delete', headerName: 'Delete', width: 100, renderCell: (params) => 
+      <Button size="small" onClick={(e: any) => {deleteCurrency(params.value)}} variant="contained"><DeleteIcon /></Button> },
+  ];
+
 
   return (
     <div className="Currency">
@@ -66,15 +94,15 @@ const CurrencyMain = () => {
         <input type="submit" value="Submit" />
       </form>
 
-          {
-            data.map(({id, name, code, symbol, subunit}: ICurrency) => 
-            {
-              return (
-                <p id={id.toString()}>
-                  {name} , {symbol}, {code}, {subunit} <button onClick={(e: any) => {deleteCurrency(id)}}>Delete</button>
-                </p>)
-            })
-          }
+      <div style={{ height: 500, width: '60%' }}>
+          <DataGrid 
+            rows={rows} 
+            columns={columns} 
+            pageSize={10}
+          />
+      </div>
+
+          
     </div>
   );
 }

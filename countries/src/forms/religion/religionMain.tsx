@@ -1,7 +1,9 @@
-
 import axios, { AxiosResponse } from 'axios';
 import React, { useEffect, useState } from 'react';
 import IReligion from '../../api-ifc/IReligion';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import Button from '@mui/material/Button';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const baseurl ="http://127.0.0.1:8000/";
 
@@ -43,6 +45,33 @@ const ReligionMain = () => {
   const handleChangeDesc= (e:  any) =>{
     setDescription(e.currentTarget.value)
   }
+
+
+  const rows = 
+    data.map((x: IReligion) => 
+    {
+      return (
+        {
+          id: x.id,
+          name: x.name,
+          description: x.description,
+          delete: x.id,
+        }
+      )
+    })
+
+  const columns: GridColDef[] = [
+    { field: 'id', headerName: 'Id', width: 30 },
+    { field: 'name', headerName: 'Name', width: 150 },
+    { field: 'description', headerName: 'Description', width: 300 },
+    { field: 'delete', headerName: 'Delete', width: 100, renderCell: (params) => 
+      <Button size="small" onClick={(e: any) => {deleteReligion(params.value)}} variant="contained"><DeleteIcon /></Button> },
+  ];
+
+
+
+
+  
   return (
     <div className="Religion">
       <h1>Religion</h1>
@@ -52,27 +81,15 @@ const ReligionMain = () => {
 
         <input type="submit" value="Submit" />
       </form>
-      <table>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-        <th>Action</th>
-      </tr>
-      {
+      
+      <div style={{ height: 500, width: '100%' }}>
+          <DataGrid
+            rows={rows} 
+            columns={columns}
+            rowsPerPageOptions={[0]}
+          />
+      </div>
 
-            data.map(({id, name, description}: IReligion) => 
-            {
-              return (
-                <tr>
-                  <td>{name}</td>
-                  <td>{description} </td>
-                  <td><button onClick={(e: any) => {deleteReligion(id)}}>Delete</button></td>
-                  </tr>
-                )
-            })
-            
-          }
-        </table>
     </div>
   );
 }

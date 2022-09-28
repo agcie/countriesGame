@@ -9,10 +9,10 @@ const CountryMain = () => {
         <div>
         <h1>Country</h1>
         <Grid container spacing={2} >
-        <Grid item xs={5}>
+        <Grid item xs={2}>
             <AddCountry/>
         </Grid>
-        <Grid item xs={5}>
+        <Grid item xs={10}>
             <ListCountries/>
         </Grid>
         </Grid>

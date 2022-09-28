@@ -2,6 +2,9 @@
 import axios, { AxiosResponse } from 'axios';
 import React, { useEffect, useState } from 'react';
 import IContinent from '../../api-ifc/IContinent';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import Button from '@mui/material/Button';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const ContinentMain = () => {
   const [continent, setContinent] = useState("");
@@ -40,6 +43,27 @@ const ContinentMain = () => {
     axios.delete("http://127.0.0.1:8000/continents/"+id.toString())
   }
   const [selected, setSelected] = useState(1);
+
+
+  const rows = 
+        data.map((x: IContinent) => 
+          {
+            return (
+              {
+                id: x.id,
+                name: x.name,
+                delete: x.id,
+              }
+            )
+          })
+
+  const columns: GridColDef[] = [
+  { field: 'id', headerName: 'Id', width: 30 },
+  { field: 'name', headerName: 'Name', width: 100 },
+  { field: 'delete', headerName: 'Delete', width: 100, renderCell: (params) => 
+  <Button size="small" onClick={(e: any) => {deleteContinent(params.value)}} variant="contained"><DeleteIcon /></Button> },
+  ];
+
   return (
     <div className="Continent">
       <h1>Continents</h1>
@@ -48,29 +72,13 @@ const ContinentMain = () => {
         <input type="submit" value="Submit" />
       </form>
 
-          {
-            data.map(({id, name}: IContinent) => 
-            {
-              return (
-                <p id={id.toString()}>
-                  {name} <button onClick={(e: any) => {deleteContinent(id)}}>Delete</button>
-                </p>)
-            })
-            
-          }
-          <select value={selected} onChange={(e: any) =>{ setSelected(e.target.value)}}>
-          {
-            data.map(({id, name}: IContinent) => 
-            {
-              return (
-                <option value={id}>{name}</option>
-                )
-            })
-            
-          }
-          </select>
-          selected id: {selected}
-
+      <div style={{ height: 500, width: '45%' }}>
+          <DataGrid 
+            rows={rows} 
+            columns={columns} 
+            pageSize={10}
+          />
+          </div>
     </div>
   );
 }

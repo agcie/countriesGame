@@ -1,7 +1,9 @@
-
 import axios, { AxiosResponse } from 'axios';
 import React, { useEffect, useState } from 'react';
 import ICity from '../../api-ifc/ICity';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import Button from '@mui/material/Button';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const baseurl ="http://127.0.0.1:8000/";
 
@@ -55,6 +57,31 @@ const CityMain = () => {
     axios.delete( `${baseurl}cities/`+id.toString())
   }
 
+  const rows = 
+    data.map((x: ICity) => 
+    {
+      return (
+        {
+          id: x.id,
+          name: x.name,
+          longitude: x.longitude,
+          latitude: x.latitude,
+          population: x.population,
+          delete: x.id,
+        }
+      )
+    })
+
+  const columns: GridColDef[] = [
+    { field: 'id', headerName: 'Id', width: 30 },
+    { field: 'name', headerName: 'Name', width: 100 },
+    { field: 'longitude', headerName: 'Longitude', width: 100 },
+    { field: 'latitude', headerName: 'Latitude', width: 100 },
+    { field: 'population', headerName: 'Population', width: 100 },
+    { field: 'delete', headerName: 'Delete', width: 100, renderCell: (params) => 
+      <Button size="small" onClick={(e: any) => {deleteCity(params.value)}} variant="contained"><DeleteIcon /></Button> },
+  ];
+
   return (
     <div className="City">
       <h1>City</h1>
@@ -65,15 +92,15 @@ const CityMain = () => {
         <label> population: <input type="number" onChange={handleChangePopulation}></input> </label>
         <input type="submit" value="Submit" />
       </form>
-      {
-            data.map(({id, name, latitude, longitude, population}: ICity) => 
-            {
-              return (
-                <p id={id.toString()}>
-                  <b>{name}</b> : [{latitude}, {longitude}], popolation: {population} <button onClick={(e: any) => {deleteCity(id)}}>Delete</button> 
-                </p>)
-            })
-          }
+      
+      <div style={{ height: 500, width: '60%' }}>
+          <DataGrid 
+            rows={rows} 
+            columns={columns}
+            rowsPerPageOptions={[0]}
+          />
+      </div>
+
     </div>
   );
 }
