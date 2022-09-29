@@ -66,7 +66,7 @@ const CityMain = () => {
           name: x.name,
           longitude: x.longitude,
           latitude: x.latitude,
-          population: x.population,
+          population: (x.population).toLocaleString(),
           delete: x.id,
         }
       )
