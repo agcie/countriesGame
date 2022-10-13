@@ -1,8 +1,8 @@
-import ICurrency from '../api-ifc/ICurrency';
-import IContinent from '../api-ifc/IContinent';
-import ICity from '../api-ifc/ICity';
-import ILanguage from '../api-ifc/ILanguage';
-import IReligion from '../api-ifc/IReligion';
+import ICurrency from './ICurrency';
+import IContinent from './IContinent';
+import ICity from './ICity';
+import ILanguage from './ILanguage';
+import IReligion from './IReligion';
 
 interface ICountry{
     id: number;

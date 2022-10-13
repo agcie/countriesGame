@@ -1,5 +1,5 @@
 import * as actionTypes from './continentTypes'
-import IContinent from '../../api-ifc/IContinent'
+import IContinent from '../../routes/add/api-ifc/IContinent'
 
 export interface IContinentReducer{
     continentList: IContinent[];

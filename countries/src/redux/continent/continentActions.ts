@@ -1,4 +1,4 @@
-import IContinent from "../../api-ifc/IContinent";
+import IContinent from "../../routes/add/api-ifc/IContinent";
 import * as actionTypes from './continentTypes';
 import { Dispatch } from "@reduxjs/toolkit";
 
