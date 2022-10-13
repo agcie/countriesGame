@@ -14,6 +14,8 @@ const Game = () => {
   const [list, setList] = useState<ICountriesList[]>([]);
   const [country, setCountry] = useState<ICountry>();
   const [randomId, setRandomId] = useState<number>();
+  const [diff, setDiff] = useState<number>(Number(1));
+
 
   useEffect(() => {
     axios.get<ICountriesList[]>(`${baseurl}countries/list/id`)
@@ -21,6 +23,15 @@ const Game = () => {
     {
         setList(response.data);
     } ) }, []);
+
+    const handleChange = (e: any) => {
+      setDiff(e.currentTarget.value)
+      axios.get<ICountriesList[]>(`${baseurl}countries/list/id?difficulty=${e.currentTarget.value}`)
+      .then((response : AxiosResponse)  =>
+      {
+          setList(response.data);
+      } )
+    }
 
     const getRandomCountry = async () =>
     {
@@ -39,6 +50,14 @@ const Game = () => {
           router -> play {id, country, list, player}
           <Play id={1} country={} countiresList={list}/>
         */}
+        <select defaultValue={0} onChange={handleChange}>
+          <option value={0} disabled>Wybierz poziom trudności</option>
+          <option value={1}>Łatwy</option>
+          <option value={2}>Średni</option>
+          <option value={3}>Trudny</option>
+        </select>
+       
+
         <button onClick={getRandomCountry}>
           Start Game
         </button>
