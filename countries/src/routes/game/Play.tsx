@@ -20,34 +20,48 @@ const Play = ( playPros: PlayProps) => {
     const [ans, setAns] = useState(0);
     const [guesses, setGuesses] = useState<string[]>([]);
     const [points, setPoints]= useState(20);
+    const [name, setName] = useState("")
+    const [winner, setWinner] = useState(false)
 
-    const getCountryFromId = (id: number) =>
+    const getIdFromCountry = (name: string) =>
     {
-        const idx = playPros.countiresList.findIndex(e => e.id == id);
-        return playPros.countiresList[idx].name;
+        const idx = playPros.countiresList.findIndex(e => e.name == name);
+        return playPros.countiresList[idx].id;
     }
-    const choosenAns=(e: number) =>{
-
-        console.log(e);
-        if(e != playPros.country.id)
+    const choosenAns=() =>{
+        const id = getIdFromCountry(name)
+        if(id != playPros.country.id)
         {
             setLevel(level + 1);
             setPoints(points - 3);
-            setGuesses([...guesses, getCountryFromId(e)]);
+            setGuesses([...guesses, name]);
+        }
+        else{
+            setWinner(true)
         }
     }
     return (
       <div className="Play">
+        {winner===true &&
+            <h1>Wygrales!</h1>
+            
+        }
+        {winner===false &&
+        <div>
         <h1>Rozgrywka</h1>
         {playPros.country.name} <br/>
 
         Choose ans: 
-        <select value={ans} onChange={(e: any) =>{ choosenAns(e.target.value)}}>
-          {playPros.countiresList.map(({id, name}) => 
+        {name}<br/>
+        <input type="text"  list="list" onChange={(e: any) =>{ setName(e.target.value)}}/>
+        <datalist id="list">
+        {playPros.countiresList.map(({id, name}) => 
             {
-              return (<option value={id}>{name} </option>)
-            })}
-        </select>
+              return (<option value={name}/>)
+        })}
+        </datalist>
+        <button onClick={choosenAns}>Zgaduje</button>
+
 
         
         {level >= 1 &&
@@ -87,8 +101,10 @@ const Play = ( playPros: PlayProps) => {
             return (<div> {e} </div>)
         })}
  <h1>Your points : {points*playPros.country.difficulty}</h1>
-      </div>
-    );
+    </div>
+    }
+    </div>
+    )
   }
 
 export default Play;
