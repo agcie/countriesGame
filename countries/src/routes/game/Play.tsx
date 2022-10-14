@@ -10,7 +10,7 @@ const baseurl ="http://127.0.0.1:8000/";
 
 
 interface PlayProps{
-    countiresList: ICountriesList[];
+    countriesList: ICountriesList[];
     country: ICountry;
 }
 
@@ -25,19 +25,22 @@ const Play = ( playPros: PlayProps) => {
 
     const getIdFromCountry = (name: string) =>
     {
-        const idx = playPros.countiresList.findIndex(e => e.name == name);
-        return playPros.countiresList[idx].id;
+        const idx = playPros.countriesList.findIndex(e => e.name == name);
+        return playPros.countriesList[idx].id;
     }
     const choosenAns=() =>{
-        const id = getIdFromCountry(name)
-        if(id != playPros.country.id)
-        {
-            setLevel(level + 1);
-            setPoints(points - 3);
-            setGuesses([...guesses, name]);
-        }
-        else{
-            setWinner(true)
+        if(name){
+            const id = getIdFromCountry(name)
+            if(id != playPros.country.id)
+            {
+                setLevel(level + 1);
+                setPoints(points - 3);
+                setGuesses([...guesses, name]);
+            }
+            else{
+                setWinner(true)
+            }
+            setName('');
         }
     }
     return (
@@ -53,17 +56,15 @@ const Play = ( playPros: PlayProps) => {
 
         Choose ans: 
         {name}<br/>
-        <input type="text"  list="list" onChange={(e: any) =>{ setName(e.target.value)}}/>
+        <input value={name} placeholder={"wybierz panstwo"} list="list" onChange={(e: any) =>{ setName(e.target.value)}}/>
         <datalist id="list">
-        {playPros.countiresList.map(({id, name}) => 
+        {(playPros.countriesList.filter(({name}) => !(guesses.includes(name)))
+            ).map(({name}) => 
             {
-              return (<option value={name}/>)
-        })}
+                    return (<option value={name}/>)
+            })}
         </datalist>
         <button onClick={choosenAns}>Zgaduje</button>
-
-
-        
         {level >= 1 &&
             <div>
             <h1>Level 1</h1>

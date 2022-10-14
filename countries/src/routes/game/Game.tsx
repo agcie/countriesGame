@@ -11,6 +11,7 @@ const baseurl ="http://127.0.0.1:8000/";
 
 const Game = () => {
 
+  const [fullList, setFullList] = useState<ICountriesList[]>([]);
   const [list, setList] = useState<ICountriesList[]>([]);
   const [country, setCountry] = useState<ICountry>();
   const [randomId, setRandomId] = useState<number>();
@@ -21,12 +22,13 @@ const Game = () => {
     axios.get<ICountriesList[]>(`${baseurl}countries/list/id`)
     .then((response : AxiosResponse)  =>
     {
+        setFullList(response.data);
         setList(response.data);
     } ) }, []);
 
     const handleChange = (e: any) => {
       setDiff(e.currentTarget.value)
-      axios.get<ICountriesList[]>(`${baseurl}countries/list/id?difficulty=${e.currentTarget.value}`)
+      axios.get<ICountriesList[]>(`${baseurl}countries/list/id${e.currentTarget.value}`)
       .then((response : AxiosResponse)  =>
       {
           setList(response.data);
@@ -51,10 +53,10 @@ const Game = () => {
           <Play id={1} country={} countiresList={list}/>
         */}
         <select defaultValue={0} onChange={handleChange}>
-          <option value={0} disabled>Wybierz poziom trudności</option>
-          <option value={1}>Łatwy</option>
-          <option value={2}>Średni</option>
-          <option value={3}>Trudny</option>
+          <option value={""}>Wszystko</option>
+          <option value={"?difficulty=1"}>Łatwy</option>
+          <option value={"?difficulty=2"}>Średni</option>
+          <option value={"?difficulty=3"}>Trudny</option>
         </select>
        
 
@@ -63,7 +65,7 @@ const Game = () => {
         </button>
 
        {country != null &&
-        <Play countiresList={list} country={country}/>
+        <Play countriesList={fullList} country={country}/>
        }
       </div>
     );
