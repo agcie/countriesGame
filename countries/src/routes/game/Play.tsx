@@ -1,109 +1,84 @@
-import axios, { AxiosResponse } from 'axios';
-import React, { useEffect, useState } from 'react';
-import { NumericLiteral } from 'typescript';
-import ICountriesList from '../add/api-ifc/ICountriesList';
+import React from 'react';
+import styled from 'styled-components';
 import ICountry from '../add/api-ifc/ICountry';
-import ILanguage from '../add/api-ifc/ILanguage';
 
 
-const baseurl ="http://127.0.0.1:8000/";
-
-
+const Level = styled.div`
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid black;
+    width: 30%;
+    text-align: center;
+`;
+const Name= styled.p`
+    font-size: 1em;
+`;
+const Value= styled.p`
+    font-size: 1em;
+`;
 interface PlayProps{
-    countiresList: ICountriesList[];
     country: ICountry;
+    level: number;
 }
 
-const Play = ( playPros: PlayProps) => {
-
-    const [level, setLevel] = useState(1);
-    const [ans, setAns] = useState(0);
-    const [guesses, setGuesses] = useState<string[]>([]);
-    const [points, setPoints]= useState(20);
-    const [name, setName] = useState("")
-    const [winner, setWinner] = useState(false)
-
-    const getIdFromCountry = (name: string) =>
-    {
-        const idx = playPros.countiresList.findIndex(e => e.name == name);
-        return playPros.countiresList[idx].id;
-    }
-    const choosenAns=() =>{
-        const id = getIdFromCountry(name)
-        if(id != playPros.country.id)
-        {
-            setLevel(level + 1);
-            setPoints(points - 3);
-            setGuesses([...guesses, name]);
-        }
-        else{
-            setWinner(true)
-        }
-    }
-    return (
+const Play = ( props: PlayProps) => {
+     return (
       <div className="Play">
-        {winner===true &&
-            <h1>Wygrales!</h1>
-            
-        }
-        {winner===false &&
-        <div>
-        <h1>Rozgrywka</h1>
-        {playPros.country.name} <br/>
-
-        Choose ans: 
-        {name}<br/>
-        <input type="text"  list="list" onChange={(e: any) =>{ setName(e.target.value)}}/>
-        <datalist id="list">
-        {playPros.countiresList.map(({id, name}) => 
-            {
-              return (<option value={name}/>)
-        })}
-        </datalist>
-        <button onClick={choosenAns}>Zgaduje</button>
 
 
-        
-        {level >= 1 &&
-            <div>
-            <h1>Level 1</h1>
-            
-               area: {playPros.country.area} <br/>
-               GDP: {playPros.country.GDP}<br/>
-               currency symbol: {playPros.country.currency.symbol}
-            </div>
+        {props.level >= 1 &&
+            <Level>
+               <b>Powierzchnia:</b> {props.country.area}km2 <br/>
+               <b>PKB:</b> {props.country.GDP}mld$<br/>
+               <b>Symbol waluty:</b> {props.country.currency.symbol}<br/>
+               <b>Domena internetowa:</b> {props.country.web_domain}<br/>
+            </Level>
         }
-        {level >= 2 &&
-            <div>
-            <h1>Level 2</h1>
-            
-            calling_code: {playPros.country.calling_code}<br/>
-               currency name: {playPros.country.currency.name}
-            </div>
+        {props.level >= 2 &&
+            <Level>
+               <b>Numer Kierunkowy:</b> +{props.country.calling_code}<br/>
+               {props.country.driving_on_right && <p>Jazda po prawej</p>}
+               {!props.country.driving_on_right && <p>Jazda po lewej</p>}
+               <b>Populacja:</b> {props.country.population}<br/>
+               <b>Populacja stolicy:</b> {props.country.capital_city.population}<br/>
+
+            </Level>
         }
-        {level >= 3 &&
-            <div>
-            <h1>Level 3</h1>
-               area: {playPros.country.area}<br/>
-               GDP: {playPros.country.GDP}
-            </div>
+        {props.level >= 3 &&
+            <Level>
+                <b>Kontynent: </b> {props.country.continent.name}<br/>
+                <b>Religie panujące w państwie:</b> {
+                    props.country.religion.map(e =>
+                        <p>{e.name}</p>)
+                }<br/>
+                <b>Współrzędne stolicy:</b> [{props.country.capital_city.latitude}, {props.country.capital_city.longitude}]<br/>
+            </Level>
         }
 
-        {level >= 4 &&
-            <div>
-            <h1>Level 4</h1>
-                area: {playPros.country.area}<br/>
-                GDP: {playPros.country.GDP}
-            </div>
+        {props.level >= 4 &&
+            <Level>
+               <b>Nazwa Waluty:</b> {props.country.currency.name} <br/>
+               <b>Języki urzędowe:</b> {
+                    props.country.language.map(e =>
+                        <p>{e.name}</p>)
+                }<br/>
+            </Level>
         }
-        <h1>Your Guessed :</h1>
-        {guesses.map(e => {
-            return (<div> {e} </div>)
-        })}
- <h1>Your points : {points*playPros.country.difficulty}</h1>
+        {props.level >= 5 &&
+            <Level>
+            <b>Stolica:</b> {props.country.capital_city.name}<br/>
+            <b>Flaga:</b><br/>
+            <img src={props.country.flag_url} width={100} height={60}/>
+            </Level>
+        }
+        {props.level >= 5 &&
+        <Level>
+            Nie ma już więcej informacji o tym państwie
+        </Level>
+        }
+    
     </div>
-    }
-    </div>
+
     )
   }
 

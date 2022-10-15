@@ -22,5 +22,4 @@ interface ICountry{
     flag_url: string;
     difficulty: number;
   }
-
   export default ICountry;
