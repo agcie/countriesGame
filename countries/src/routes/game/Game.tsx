@@ -37,6 +37,7 @@ const baseurl ="http://127.0.0.1:8000/";
 
 const Game = () => {
 
+  const [fullList, setFullList] = useState<ICountriesList[]>([]);
   const [list, setList] = useState<ICountriesList[]>([]);
   const [country, setCountry] = useState<ICountry>();
   const [name, setName] = useState("");
@@ -47,13 +48,25 @@ const Game = () => {
   const [currentPlayer, setCurrentPlayer] = useState(0);
   const [players, setPlayers] = useState(3);
   const [playerPoints, setPlayerPoints] = useState([0,0,0,0,0,0]); //to trzeba inaczej
+  const [diff, setDiff] = useState<number>(Number(1));
+
 
   useEffect(() => {
     axios.get<ICountriesList[]>(`${baseurl}countries/list/id`)
     .then((response : AxiosResponse)  =>
     {
+        setFullList(response.data);
         setList(response.data);
     } ) }, []);
+
+    const handleChange = (e: any) => {
+      setDiff(e.currentTarget.value)
+      axios.get<ICountriesList[]>(`${baseurl}countries/list/id${e.currentTarget.value}`)
+      .then((response : AxiosResponse)  =>
+      {
+          setList(response.data);
+      } )
+    }
 
     const getRandomCountry = async () =>
     {
@@ -104,6 +117,13 @@ const Game = () => {
           {players} 
           <Button onClick={()=>setPlayers(players+1)}>+</Button> 
           <Button onClick={()=>setPlayers(players-1)}>-</Button>
+
+          <select defaultValue={0} onChange={handleChange}>
+          <option value={""}>Wszystko</option>
+          <option value={"?difficulty=1"}>Łatwy</option>
+          <option value={"?difficulty=2"}>Średni</option>
+          <option value={"?difficulty=3"}>Trudny</option>
+        </select>
           <Button onClick={getRandomCountry}>Start Game </Button>
         </div>
         }
@@ -119,9 +139,9 @@ const Game = () => {
 
         {winner===false &&
         <div>
-            <DInput type="text"  list="list" value={name} onChange={(e: any) =>{ setName(e.target.value)}}/>
+            <DInput type="text"  list="list" placeholder={"Wybierz państwo"}  value={name} onChange={(e: any) =>{ setName(e.target.value)}}/>
             <DList id="list">
-            {list.map(({id, name}) => 
+            {list.filter(({name}) => !(guesses.includes(name))).map(({id, name}) => 
                 {return (<option value={name}/>)})}
             </DList>
 
@@ -134,7 +154,9 @@ const Game = () => {
           {guesses.map(e => { return (<div> {e} </div>)})}
           <br/>
         </div>
-       }
+
+       
+        }
 
         Aktualnie zgaduje: player{currentPlayer} <br/>
         player1: {playerPoints[0]} <br/>
