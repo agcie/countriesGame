@@ -1,7 +1,7 @@
 interface ICity{
     name: string;
     id: number;
-    population: string;
+    population: number;
     longitude: string;
     latitude: string;
   }

@@ -28,19 +28,19 @@ const Play = ( props: PlayProps) => {
 
         {props.level >= 1 &&
             <Level>
-               <b>Powierzchnia:</b> {props.country.area}km2 <br/>
-               <b>PKB:</b> {props.country.GDP}mld$<br/>
+               <b>Powierzchnia:</b> {(props.country.area).toLocaleString()}km2 <br/>
+               <b>PKB:</b> {props.country.GDP} mld$<br/>
                <b>Symbol waluty:</b> {props.country.currency.symbol}<br/>
                <b>Domena internetowa:</b> {props.country.web_domain}<br/>
             </Level>
         }
         {props.level >= 2 &&
             <Level>
-               <b>Numer Kierunkowy:</b> +{props.country.calling_code}<br/>
-               {props.country.driving_on_right && <p>Jazda po prawej</p>}
-               {!props.country.driving_on_right && <p>Jazda po lewej</p>}
-               <b>Populacja:</b> {props.country.population}<br/>
-               <b>Populacja stolicy:</b> {props.country.capital_city.population}<br/>
+               <b>Numer Kierunkowy:</b> {props.country.calling_code}<br/>
+               {props.country.driving_on_right && <p>Ruch prawostronny</p>}
+               {!props.country.driving_on_right && <p>Ruch lewostronny</p>}
+               <b>Populacja:</b> {(props.country.population).toLocaleString()}<br/>
+               <b>Populacja stolicy:</b> {(props.country.capital_city.population).toLocaleString()}<br/>
 
             </Level>
         }
@@ -51,7 +51,7 @@ const Play = ( props: PlayProps) => {
                     props.country.religion.map(e =>
                         <p>{e.name}</p>)
                 }<br/>
-                <b>Współrzędne stolicy:</b> [{props.country.capital_city.latitude}, {props.country.capital_city.longitude}]<br/>
+                <b>Współrzędne stolicy:</b> {props.country.capital_city.latitude} {props.country.capital_city.longitude}<br/>
             </Level>
         }
 

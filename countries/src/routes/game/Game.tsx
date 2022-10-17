@@ -1,10 +1,12 @@
 import axios, { AxiosResponse } from 'axios';
+
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import ICountriesList from '../add/api-ifc/ICountriesList';
 import ICountry from '../add/api-ifc/ICountry';
 import ILanguage from '../add/api-ifc/ILanguage';
 import Play from './Play';
+import Player from './Player';
 
 const Button = styled.button`
   border: none;
@@ -34,20 +36,38 @@ const DInput = styled.input`
 `;
 const baseurl ="http://127.0.0.1:8000/";
 
+interface PlayerList{
+  //name: string;
+  points: number;
+  isActive: boolean;
+}
+
 
 const Game = () => {
 
   const [fullList, setFullList] = useState<ICountriesList[]>([]);
   const [list, setList] = useState<ICountriesList[]>([]);
   const [country, setCountry] = useState<ICountry>();
+
   const [name, setName] = useState("");
   const [level, setLevel] = useState(1);
-  const [winner, setWinner] = useState(false)
-  const [points, setPoints]= useState(20);
+  const [isWinner, setIsWinner] = useState(false);
+  const [winner, setWinner] = useState(0);
+  
+  
   const [guesses, setGuesses] = useState<string[]>([]);
+
+  const [points, setPoints]= useState(20);
   const [currentPlayer, setCurrentPlayer] = useState(0);
-  const [players, setPlayers] = useState(3);
-  const [playerPoints, setPlayerPoints] = useState([0,0,0,0,0,0]); //to trzeba inaczej
+  const [players, setPlayers] = useState(1);
+  const [playerList, setPlayerList] = useState<PlayerList[]>([{points: 0, isActive: true}])
+  const [playerPoints, setPlayerPoints] = useState([0]);
+  
+  const [currentTurn, setCurrentTurn] = useState(0);
+  const [currentRound, setCurrentRound] = useState(1);
+  const [rounds, setRounds] = useState(3);
+  const [end, setEnd] = useState(false);
+
   const [diff, setDiff] = useState<number>(Number(1));
 
 
@@ -59,7 +79,7 @@ const Game = () => {
         setList(response.data);
     } ) }, []);
 
-    const handleChange = (e: any) => {
+    const changeDifficulty = (e: any) => {
       setDiff(e.currentTarget.value)
       axios.get<ICountriesList[]>(`${baseurl}countries/list/id${e.currentTarget.value}`)
       .then((response : AxiosResponse)  =>
@@ -70,8 +90,11 @@ const Game = () => {
 
     const getRandomCountry = async () =>
     {
+      console.log(playerList);
       setCurrentPlayer((currentPlayer%players)+1);
-      setWinner(false);
+      
+      changePlayer();
+      setEnd(false);
       setLevel(1);
       setPoints(20);
       axios.get<ICountry>(`${baseurl}countries/full/${list[Math.floor(Math.random() * list.length)].id}`)
@@ -80,68 +103,187 @@ const Game = () => {
           setCountry(response.data);
 
       } )
+      
     }
+
 
     const getIdFromCountry = (name: string) =>
     {
-        const idx = list.findIndex(e => e.name == name);
-        return list[idx].id;
+          const idx = fullList.findIndex(e => e.name == name);
+          return fullList[idx].id;
+    }
+
+    const getWinner = () =>
+    {
+      let max = 0;
+      let index = 0;
+      for(let i = 0; i < players; i++)
+      {
+        if(playerPoints[i] > max)
+        {
+          index = i;
+          max = playerPoints[i];
+        }
+      }
+      return index;
+    }
+
+    const checkWin = () =>
+    {
+      if(currentTurn===players-1 && currentRound<rounds)
+        {
+          setCurrentTurn(0);
+          setCurrentRound(currentRound+1);
+        } else if(currentRound===rounds && currentTurn===players-1)
+        {
+          setIsWinner(true);
+          setEnd(true);
+          setWinner(getWinner()+1);
+        }
+    }
+
+    const changePlayer = () =>
+    {
+      let temp = [];
+      console.log(currentPlayer);
+      for(let i = 0; i<players; i++)
+      {
+        if(i===currentPlayer)
+        {
+          temp.push({points: playerPoints[i], isActive: true});
+        }
+        else
+        {
+          temp.push({points: playerPoints[i], isActive: false});
+        }
+      }
+      setPlayerList(temp);
+      
     }
 
     const submitCountry=() =>
     {
+      if(currentPlayer>=players)
+      {
+        setCurrentPlayer(0);
+      }
         const id = getIdFromCountry(name)
         if(id != country?.id)
         {
             setLevel(level + 1);
-            setPoints(points - 3);
             setGuesses([...guesses, name]);
             setName("")
+            
+            if(points<=3)
+            {
+              setPoints(0);
+              setCurrentTurn(currentTurn+1);
+              setEnd(true);
+              checkWin();
+            } else 
+            {
+              setPoints(points - 3);
+            }
         }
         else{
-            setWinner(true)
-            setName("")
+            setEnd(true);
+            setList(list.filter(x => !(x.id == country!.id)))
+            console.log(list);
+            setName("");
             let tab = playerPoints;
             playerPoints[currentPlayer-1]+=(points*country.difficulty);
             console.log(playerPoints)
             setPlayerPoints(playerPoints);
             setGuesses([]);
+            setCurrentTurn(currentTurn+1);
+            checkWin();
         }
     }
+
+    const addPlayer = () =>
+    {  
+      if(players<10)
+      {
+        setPlayers(players+1);
+        setPlayerPoints([...playerPoints, 0]);
+        setPlayerList([...playerList, {points: 0, isActive: false}]);
+      }
+    }
+    const subPlayer = () =>
+    {
+      if(players > 1)
+      {
+        setPlayers(players-1);
+        setPlayerPoints([...playerPoints].splice(0, players-1));
+        setPlayerList([...playerList].splice(0, players-1));
+      }
+    }
+
+    const addRound = () =>
+    {  
+      if(rounds<10)
+      {
+        setRounds(rounds+1);
+        setPlayerPoints([...playerPoints, 0]);
+      }
+    }
+    const subRound = () =>
+    {
+      if(rounds > 1)
+      {
+        setRounds(rounds-1);
+        setPlayerPoints([...playerPoints].splice(0, players-1))
+      }
+    }
+    
 
     return (
       <div className="Game">
         <h1>Countries Game</h1>
         {country == null &&
         <div>
+          <h2>Liczba graczy</h2>
           {players} 
-          <Button onClick={()=>setPlayers(players+1)}>+</Button> 
-          <Button onClick={()=>setPlayers(players-1)}>-</Button>
+          <Button onClick={addPlayer}>+</Button> 
+          <Button onClick={subPlayer}>-</Button>
+          <h2>Liczba rund</h2>
+          {rounds} 
+          <Button onClick={addRound}>+</Button> 
+          <Button onClick={subRound}>-</Button>
 
-          <select defaultValue={0} onChange={handleChange}>
+          <select defaultValue={0} onChange={changeDifficulty}>
           <option value={""}>Wszystko</option>
           <option value={"?difficulty=1"}>Łatwy</option>
           <option value={"?difficulty=2"}>Średni</option>
           <option value={"?difficulty=3"}>Trudny</option>
         </select>
-          <Button onClick={getRandomCountry}>Start Game </Button>
+          <Button onClick={getRandomCountry}>Start</Button>
         </div>
         }
 
-       {country != null &&
-        <div>
-        {winner===true &&
+        {isWinner === true &&
           <div>
-            <h1>Wygrales!</h1>
-            <Button onClick={getRandomCountry}>Next player </Button>
+            <h1>Zwycięzca: player{winner}</h1>
+            
+          </div>
+
+        }
+
+       {country != null && isWinner === false &&
+        <div>
+        <h1>Runda {currentRound}</h1>
+        {end===true &&
+          <div>
+            <h1>Zgadłeś!</h1>
+            <Button onClick={getRandomCountry}>Następny Gracz </Button>
           </div>
         }
 
-        {winner===false &&
+        {end===false &&
         <div>
             <DInput type="text"  list="list" placeholder={"Wybierz państwo"}  value={name} onChange={(e: any) =>{ setName(e.target.value)}}/>
             <DList id="list">
-            {list.filter(({name}) => !(guesses.includes(name))).map(({id, name}) => 
+            {fullList.filter(({name}) => !(guesses.includes(name))).map(({id, name}) => 
                 {return (<option value={name}/>)})}
             </DList>
 
@@ -159,9 +301,12 @@ const Game = () => {
         }
 
         Aktualnie zgaduje: player{currentPlayer} <br/>
-        player1: {playerPoints[0]} <br/>
+        {/* player1: {playerPoints[0]} <br/>
         player2: {playerPoints[1]} <br/>
-        player3: {playerPoints[2]} <br/>
+        player3: {playerPoints[2]} <br/> */}
+        <ul>
+          {playerList.map(({points, isActive}, index) => {return (<Player points={points} isCurrent={isActive} id={index+1}/>)})}
+        </ul>
       </div>
       
       }</div>
