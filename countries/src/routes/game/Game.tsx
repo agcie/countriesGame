@@ -56,12 +56,12 @@ const Game = () => {
   const [winner, setWinner] = useState(0);
   const [guesses, setGuesses] = useState<string[]>([]);
 
-  const [playerNames, setPlayerNames] = useState<string[]>(["Player 1"]);
+  const [playerNames, setPlayerNames] = useState<string[]>(["Player 1", "Player 2"]);
   const [points, setPoints]= useState(20);
   const [currentPlayer, setCurrentPlayer] = useState(0);
   const [players, setPlayers] = useState(2);
   const [playerList, setPlayerList] = useState<PlayerList[]>([{pname: "Player 1", points: 0, isActive: true}, {pname: "Player 2", points: 0, isActive: false}]);
-  const [playerPoints, setPlayerPoints] = useState([0]);
+  const [playerPoints, setPlayerPoints] = useState([0, 0]);
   
   const [currentTurn, setCurrentTurn] = useState(0);
   const [currentRound, setCurrentRound] = useState(1);
@@ -91,10 +91,10 @@ const Game = () => {
     const getRandomCountry = async () =>
     {
       console.log(playerList);
+      console.log(playerNames);
       if(currentPlayer===players)
       {
         setCurrentPlayer(0);
-        
       }
       setEnd(false);
       setLevel(1);
@@ -157,15 +157,18 @@ const Game = () => {
       for(let i = 0; i<players; i++)
       {
         if(i-1===currentPlayer)
-        {     
+        {   
+          console.log(1)  
           temp.push({pname: playerNames[i], points: playerPoints[i], isActive: true});
         }
         else if(currentPlayer+1-players===i)
         {
+          console.log(2) 
           temp.push({pname: playerNames[i], points: playerPoints[i], isActive: true});
         }
         else
         {
+          console.log(3) 
           temp.push({pname: playerNames[i], points: playerPoints[i], isActive: false});
         } 
       }
@@ -179,20 +182,25 @@ const Game = () => {
 
     const submitCountry=() =>
     {
+        console.log(players);
         const id = getIdFromCountry(name)
         if(id != country?.id)
         {
             setLevel(level + 1);
             setGuesses([...guesses, name]);
             setName("")
-            
-            if(points<=3)
+            console.log(country?.difficulty);
+            if(points<=(2*(country!.difficulty)))
             {
-              setPoints(0);
-              setCurrentTurn(currentTurn+1);
               setEnd(true);
-              changePlayer();
+              setList(list.filter(x => !(x.id == country!.id)))
+              setName("");
+              playerPoints[currentPlayer]+=0;
+              setPlayerPoints(playerPoints);
+              setGuesses([]);
+              setCurrentTurn(currentTurn+1);
               checkWin();
+              changePlayer();
               
             } else 
             {
@@ -223,7 +231,7 @@ const Game = () => {
         setPlayers(players+1);
         setPlayerPoints([...playerPoints, 0]);
         setPlayerList([...playerList, {pname: `Player ${players+1}`, points: 0, isActive: false}]);
-        setPlayerNames([...playerNames, `Player ${players}`]);
+        setPlayerNames([...playerNames, `Player ${players+1}`]);
       }
     }
     const subPlayer = () =>
