@@ -37,7 +37,7 @@ const DInput = styled.input`
 const baseurl ="http://127.0.0.1:8000/";
 
 interface PlayerList{
-  //name: string;
+  pname: string;
   points: number;
   isActive: boolean;
 }
@@ -52,15 +52,15 @@ const Game = () => {
   const [name, setName] = useState("");
   const [level, setLevel] = useState(1);
   const [isWinner, setIsWinner] = useState(false);
+  const [isDraw, setIsDraw] = useState(false);
   const [winner, setWinner] = useState(0);
-  
-  
   const [guesses, setGuesses] = useState<string[]>([]);
 
+  const [playerNames, setPlayerNames] = useState<string[]>(["Player 1"]);
   const [points, setPoints]= useState(20);
   const [currentPlayer, setCurrentPlayer] = useState(0);
   const [players, setPlayers] = useState(1);
-  const [playerList, setPlayerList] = useState<PlayerList[]>([{points: 0, isActive: true}])
+  const [playerList, setPlayerList] = useState<PlayerList[]>([{pname: "Player 1", points: 0, isActive: true}]);
   const [playerPoints, setPlayerPoints] = useState([0]);
   
   const [currentTurn, setCurrentTurn] = useState(0);
@@ -91,9 +91,11 @@ const Game = () => {
     const getRandomCountry = async () =>
     {
       console.log(playerList);
-      setCurrentPlayer((currentPlayer%players)+1);
-      
-      changePlayer();
+      if(currentPlayer===players)
+      {
+        setCurrentPlayer(0);
+        
+      }
       setEnd(false);
       setLevel(1);
       setPoints(20);
@@ -103,7 +105,6 @@ const Game = () => {
           setCountry(response.data);
 
       } )
-      
     }
 
 
@@ -116,6 +117,7 @@ const Game = () => {
     const getWinner = () =>
     {
       let max = 0;
+      let draw = false;
       let index = 0;
       for(let i = 0; i < players; i++)
       {
@@ -123,9 +125,14 @@ const Game = () => {
         {
           index = i;
           max = playerPoints[i];
+        } else if(playerPoints[i] === max)
+        {
+          draw = true;
         }
       }
-      return index;
+      setIsDraw(draw);
+      setWinner(index);
+
     }
 
     const checkWin = () =>
@@ -138,35 +145,40 @@ const Game = () => {
         {
           setIsWinner(true);
           setEnd(true);
-          setWinner(getWinner()+1);
+          getWinner();
         }
     }
 
     const changePlayer = () =>
     {
       let temp = [];
-      console.log(currentPlayer);
+        setCurrentPlayer(currentPlayer+1);
+
       for(let i = 0; i<players; i++)
       {
-        if(i===currentPlayer)
+        if(i-1===currentPlayer)
+        {     
+          temp.push({pname: playerNames[i], points: playerPoints[i], isActive: true});
+        }
+        else if(currentPlayer+1-players===i)
         {
-          temp.push({points: playerPoints[i], isActive: true});
+          temp.push({pname: playerNames[i], points: playerPoints[i], isActive: true});
         }
         else
         {
-          temp.push({points: playerPoints[i], isActive: false});
-        }
+          temp.push({pname: playerNames[i], points: playerPoints[i], isActive: false});
+        } 
+      }
+      if(currentPlayer===players-1)
+      {
+        setCurrentPlayer(0);
       }
       setPlayerList(temp);
-      
+      setEnd(true);
     }
 
     const submitCountry=() =>
     {
-      if(currentPlayer>=players)
-      {
-        setCurrentPlayer(0);
-      }
         const id = getIdFromCountry(name)
         if(id != country?.id)
         {
@@ -179,11 +191,14 @@ const Game = () => {
               setPoints(0);
               setCurrentTurn(currentTurn+1);
               setEnd(true);
+              changePlayer();
               checkWin();
+              
             } else 
             {
               setPoints(points - 3);
             }
+            
         }
         else{
             setEnd(true);
@@ -191,13 +206,14 @@ const Game = () => {
             console.log(list);
             setName("");
             let tab = playerPoints;
-            playerPoints[currentPlayer-1]+=(points*country.difficulty);
-            console.log(playerPoints)
+            playerPoints[currentPlayer]+=(points*country.difficulty);
             setPlayerPoints(playerPoints);
             setGuesses([]);
             setCurrentTurn(currentTurn+1);
             checkWin();
+            changePlayer();
         }
+        
     }
 
     const addPlayer = () =>
@@ -206,16 +222,18 @@ const Game = () => {
       {
         setPlayers(players+1);
         setPlayerPoints([...playerPoints, 0]);
-        setPlayerList([...playerList, {points: 0, isActive: false}]);
+        setPlayerList([...playerList, {pname: `Player ${players+1}`, points: 0, isActive: false}]);
+        setPlayerNames([...playerNames, `Player ${players+1}`]);
       }
     }
     const subPlayer = () =>
     {
-      if(players > 1)
+      if(players > 2)
       {
         setPlayers(players-1);
         setPlayerPoints([...playerPoints].splice(0, players-1));
         setPlayerList([...playerList].splice(0, players-1));
+        setPlayerNames([...playerNames].splice(0, players-1));
       }
     }
 
@@ -232,9 +250,11 @@ const Game = () => {
       if(rounds > 1)
       {
         setRounds(rounds-1);
-        setPlayerPoints([...playerPoints].splice(0, players-1))
+        setPlayerPoints([...playerPoints].splice(0, players))
       }
     }
+
+    
     
 
     return (
@@ -246,6 +266,7 @@ const Game = () => {
           {players} 
           <Button onClick={addPlayer}>+</Button> 
           <Button onClick={subPlayer}>-</Button>
+          
           <h2>Liczba rund</h2>
           {rounds} 
           <Button onClick={addRound}>+</Button> 
@@ -261,12 +282,18 @@ const Game = () => {
         </div>
         }
 
-        {isWinner === true &&
+        {isWinner === true && isDraw === false &&
           <div>
             <h1>Zwycięzca: player{winner}</h1>
             
           </div>
 
+        }
+        {isWinner === true && isDraw === true &&
+          <div>
+            <h1>Remis!</h1>
+          
+          </div>
         }
 
        {country != null && isWinner === false &&
@@ -300,12 +327,12 @@ const Game = () => {
        
         }
 
-        Aktualnie zgaduje: player{currentPlayer} <br/>
+        Aktualnie zgaduje:<br/>
         {/* player1: {playerPoints[0]} <br/>
         player2: {playerPoints[1]} <br/>
         player3: {playerPoints[2]} <br/> */}
         <ul>
-          {playerList.map(({points, isActive}, index) => {return (<Player points={points} isCurrent={isActive} id={index+1}/>)})}
+          {playerList.map(({pname, points, isActive}, index) => {return (<Player name={pname} points={points} isCurrent={isActive} id={index+1}/>)})}
         </ul>
       </div>
       

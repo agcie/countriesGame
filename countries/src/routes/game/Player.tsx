@@ -3,6 +3,7 @@ import React from 'react';
 
 
 interface PlayerProps{
+    name: string;
     id: number;
     points: number;
     isCurrent: boolean;
@@ -14,10 +15,10 @@ const Player = (props: PlayerProps) => {
     return(
         <div className="Player">
             {props.isCurrent === true &&
-                <h2>Player {props.id}: {props.points}</h2>
+                <h2>{props.name}: {props.points}</h2>
             }
             {props.isCurrent === false &&
-                <h4>Player {props.id}: {props.points}</h4>
+                <h4>{props.name}: {props.points}</h4>
             }
         </div>
     )
