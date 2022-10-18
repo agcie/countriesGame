@@ -9,6 +9,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 const ContinentMain = () => {
   const [continent, setContinent] = useState("");
   const [data, setData] = useState< IContinent[] >([]);
+  const [updating, setUpdating] = useState(false);
+  const [idUpd, setIdUpd] = useState(0);
 
   const baseurl ="http://127.0.0.1:8000/";
 
@@ -30,8 +32,26 @@ const ContinentMain = () => {
         name: (continent.toLowerCase())
       }
     )
-    .then((respone) => console.log(respone))
+    .then((response) => console.log(response))
     .catch((err) => console.log(err))
+  }
+
+  const handleUpdate = (e:  React.FormEvent) => {
+    e.preventDefault();
+    axios.put(`${baseurl}continents/${idUpd.toString()}/`,
+    {
+      name: (continent.toLowerCase())
+    }
+    )
+    .then((response) => console.log(response))
+    .catch((err) => console.log(err))
+  }
+
+  const handleClick = (id: number) =>
+  {
+    setUpdating(true);
+    setIdUpd(id);
+    console.log(id);
   }
 
   const handleChange= (e:  React.ChangeEvent<HTMLInputElement>) =>{
@@ -51,6 +71,7 @@ const ContinentMain = () => {
                 id: x.id,
                 name: x.name,
                 delete: x.id,
+                update: x.id,
               }
             )
           })
@@ -60,17 +81,25 @@ const ContinentMain = () => {
   { field: 'name', headerName: 'Name', width: 100 },
   { field: 'delete', headerName: 'Delete', width: 100, renderCell: (params) => 
   <Button size="small" onClick={(e: any) => {deleteContinent(params.value)}} variant="contained"><DeleteIcon /></Button> },
+  { field: 'update', headerName: 'Update', width: 100, renderCell: (params) => 
+  <Button size="small" onClick={(e: any) => {handleClick(params.value)}} variant="contained">U</Button> },
   ];
 
   return (
     <div className="Continent">
       <h1>Continents</h1>
+      {updating === false &&
       <form onSubmit={handleAdd}>
         <label> Name: <input type="text" onChange={handleChange}></input> </label>
         <input type="submit" value="Submit" />
-      </form>
+      </form>}
+      {updating === true &&
+      <form onSubmit={handleUpdate}>
+        <label> Name: <input type="text" onChange={handleChange}></input> </label>
+        <input type="submit" value="Update"/>
+      </form>}
 
-      <div style={{ height: 500, width: '45%' }}>
+      <div style={{ height: 500, width: '55%' }}>
           <DataGrid 
             rows={rows} 
             columns={columns} 

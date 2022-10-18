@@ -131,7 +131,7 @@ const Game = () => {
         }
       }
       setIsDraw(draw);
-      setWinner(index);
+      setWinner(index+1);
 
     }
 
