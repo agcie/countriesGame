@@ -157,18 +157,15 @@ const Game = () => {
       for(let i = 0; i<players; i++)
       {
         if(i-1===currentPlayer)
-        {   
-          console.log(1)  
+        {     
           temp.push({pname: playerNames[i], points: playerPoints[i], isActive: true});
         }
         else if(currentPlayer+1-players===i)
         {
-          console.log(2) 
           temp.push({pname: playerNames[i], points: playerPoints[i], isActive: true});
         }
         else
         {
-          console.log(3) 
           temp.push({pname: playerNames[i], points: playerPoints[i], isActive: false});
         } 
       }
@@ -182,15 +179,13 @@ const Game = () => {
 
     const submitCountry=() =>
     {
-        console.log(players);
         const id = getIdFromCountry(name)
         if(id != country?.id)
         {
             setLevel(level + 1);
             setGuesses([...guesses, name]);
             setName("")
-            console.log(country?.difficulty);
-            if(points<=(2*(country!.difficulty)))
+            if(points<=2)
             {
               setEnd(true);
               setList(list.filter(x => !(x.id == country!.id)))
@@ -271,13 +266,15 @@ const Game = () => {
         {country == null &&
         <div>
           <h2>Liczba graczy</h2>
-          {players} 
+          
           <Button onClick={addPlayer}>+</Button> 
+          {players}
           <Button onClick={subPlayer}>-</Button>
           
           <h2>Liczba rund</h2>
-          {rounds} 
+          
           <Button onClick={addRound}>+</Button> 
+          {rounds}
           <Button onClick={subRound}>-</Button>
 
           <select defaultValue={0} onChange={changeDifficulty}>
