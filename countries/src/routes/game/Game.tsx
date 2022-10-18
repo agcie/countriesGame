@@ -59,8 +59,8 @@ const Game = () => {
   const [playerNames, setPlayerNames] = useState<string[]>(["Player 1"]);
   const [points, setPoints]= useState(20);
   const [currentPlayer, setCurrentPlayer] = useState(0);
-  const [players, setPlayers] = useState(1);
-  const [playerList, setPlayerList] = useState<PlayerList[]>([{pname: "Player 1", points: 0, isActive: true}]);
+  const [players, setPlayers] = useState(2);
+  const [playerList, setPlayerList] = useState<PlayerList[]>([{pname: "Player 1", points: 0, isActive: true}, {pname: "Player 2", points: 0, isActive: false}]);
   const [playerPoints, setPlayerPoints] = useState([0]);
   
   const [currentTurn, setCurrentTurn] = useState(0);
@@ -223,7 +223,7 @@ const Game = () => {
         setPlayers(players+1);
         setPlayerPoints([...playerPoints, 0]);
         setPlayerList([...playerList, {pname: `Player ${players+1}`, points: 0, isActive: false}]);
-        setPlayerNames([...playerNames, `Player ${players+1}`]);
+        setPlayerNames([...playerNames, `Player ${players}`]);
       }
     }
     const subPlayer = () =>
