@@ -145,9 +145,9 @@ const AddCountry = () => {
           {languages.map(({id, name}: ILanguage) => 
             {
               return (<option value={id}>{name}</option>)
-            })}
+            })}    
         </select>
-        }<br/>
+        }<br/> 
         Religia : {     
         <select value={selectedReligion}  multiple={true} onChange={(e: any) =>{ handleReligion(e)}}>
           {religions.map(({id, name}: IReligion) => 

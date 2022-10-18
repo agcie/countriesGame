@@ -13,6 +13,8 @@ const CityMain = () => {
   const [longitude, setLongitude] = useState("");
   const [latitude, setLatitude] = useState("");
   const [population, setPopulation] = useState(0);
+  const [updating, setUpdating] = useState(false);
+  const [idUpd, setIdUpd] = useState(0);
 
   const [data, setData] = useState< ICity[] >([]);
 
@@ -33,11 +35,36 @@ const CityMain = () => {
         name: (name.toLowerCase()),
         population: population,
         latitude: latitude,
-        longitude: longitude
+        longitude: longitude,
       }
     )
     .then((respone) => console.log(respone))
     .catch((err) => console.log(err))
+  }
+
+  const handleUpdate = (e:  React.FormEvent) => {
+    e.preventDefault();
+    axios.put(`${baseurl}cities/${idUpd.toString()}/`,
+    {
+      name: (name.toLowerCase()),
+      population: population,
+      latitude: latitude,
+      longitude: longitude,
+    }
+    )
+    .then((response) => console.log(response))
+    .catch((err) => console.log(err))
+  }
+
+  const handleClick = (vals: any) =>
+  {
+    setUpdating(true);
+    setIdUpd(vals[0]);
+    setName(vals[1]);
+    setLongitude(vals[2]);
+    setLatitude(vals[3]);
+    setPopulation(vals[4]);
+    console.log(vals);
   }
 
   const handleChangeName= (e:  React.ChangeEvent<HTMLInputElement>) =>{
@@ -68,6 +95,7 @@ const CityMain = () => {
           latitude: x.latitude,
           population: (x.population).toLocaleString(),
           delete: x.id,
+          update: [x.id, x.name, x.longitude, x.latitude, x.population],
         }
       )
     })
@@ -80,20 +108,32 @@ const CityMain = () => {
     { field: 'population', headerName: 'Population', width: 100 },
     { field: 'delete', headerName: 'Delete', width: 100, renderCell: (params) => 
       <Button size="small" onClick={(e: any) => {deleteCity(params.value)}} variant="contained"><DeleteIcon /></Button> },
+    { field: 'update', headerName: 'Update', width: 100, renderCell: (params) => 
+      <Button size="small" onClick={(e: any) => {handleClick(params.value)}} variant="contained"><b>U</b></Button> },
   ];
 
   return (
     <div className="City">
       <h1>City</h1>
+      {updating === false &&
       <form onSubmit={handleAdd}>
         <label> Name: <input type="text" onChange={handleChangeName}></input> </label>
         <label> longitude: <input type="text" onChange={handleChangeLongitude}></input> </label>
         <label> latitude: <input type="text" onChange={handleChangeLatitude}></input> </label>
         <label> population: <input type="number" onChange={handleChangePopulation}></input> </label>
         <input type="submit" value="Submit" />
-      </form>
+      </form>}
+
+      {updating === true &&
+      <form onSubmit={handleUpdate}>
+        <label> Name: <input type="text" value={name} onChange={handleChangeName}></input> </label>
+        <label> longitude: <input type="text" value={longitude} onChange={handleChangeLongitude}></input> </label>
+        <label> latitude: <input type="text" value={latitude} onChange={handleChangeLatitude}></input> </label>
+        <label> population: <input type="number" value={population} onChange={handleChangePopulation}></input> </label>
+        <input type="submit" value="Update" />
+      </form>}
       
-      <div style={{ height: 500, width: '60%' }}>
+      <div style={{ height: 500, width: '70%' }}>
           <DataGrid 
             rows={rows} 
             columns={columns}

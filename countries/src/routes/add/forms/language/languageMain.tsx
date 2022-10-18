@@ -14,6 +14,8 @@ const LanguageMain = () => {
 
   const [name, setName] = useState("");
   const [data, setData] = useState< ILanguage[] >([]);
+  const [updating, setUpdating] = useState(false);
+  const [idUpd, setIdUpd] = useState(0);
 
   useEffect(() => {
     axios.get<ILanguage>(`${baseurl}languages`)
@@ -40,6 +42,26 @@ const LanguageMain = () => {
     )
   }
 
+  const handleUpdate = (e:  React.FormEvent) => {
+    e.preventDefault();
+    axios.put(`${baseurl}languages/${idUpd.toString()}/`,
+    {
+      name: (name.toLowerCase()),
+    }
+    )
+    .then((response) => console.log(response))
+    .catch((err) => console.log(err))
+  }
+
+  const handleClick = (vals: any) =>
+  {
+    setUpdating(true);
+    setIdUpd(vals[0]);
+    setName(vals[1]);
+    console.log(vals);
+  }
+
+
   const handleChange= (e:  React.ChangeEvent<HTMLInputElement>) =>{
     setName(e.currentTarget.value)
   }
@@ -53,6 +75,7 @@ const LanguageMain = () => {
           id: x.id,
           name: x.name,
           delete: x.id,
+          update: [x.id, x.name],
         }
       )
     })
@@ -60,8 +83,10 @@ const LanguageMain = () => {
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'Id', width: 30 },
     { field: 'name', headerName: 'Name', width: 100 },
-    { field: 'delete', headerName: 'Delete', width: 100, renderCell: (params) => 
+    { field: 'delete', headerName: 'Delete', width: 90, renderCell: (params) => 
     <Button size="small" onClick={(e: any) => {deleteLanguage(params.value)}} variant="contained"><DeleteIcon /></Button> },
+    { field: 'update', headerName: 'Update', width: 90, renderCell: (params) => 
+    <Button size="small" onClick={(e: any) => {handleClick(params.value)}} variant="contained">U</Button> },
   ];
 
 
@@ -69,12 +94,19 @@ const LanguageMain = () => {
   return (
     <div className="Language">
       <h1>Language</h1>
+      {updating === false &&
       <form onSubmit={handleAdd}>
         <label> Name: <input type="text" onChange={handleChange}></input> </label>
         <input type="submit" value="Submit" />
-      </form>
+      </form>}
 
-      <div style={{ height: 500, width: '45%' }}>
+      {updating === true &&
+      <form onSubmit={handleUpdate}>
+        <label> Name: <input type="text" value={name} onChange={handleChange}></input> </label>
+        <input type="submit" value="Update" />
+      </form>}
+
+      <div style={{ height: 500, width: '76%' }}>
           <DataGrid 
             rows={rows} 
             columns={columns} 

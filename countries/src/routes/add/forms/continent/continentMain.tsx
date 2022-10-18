@@ -47,11 +47,12 @@ const ContinentMain = () => {
     .catch((err) => console.log(err))
   }
 
-  const handleClick = (id: number) =>
+  const handleClick = (vals: any) =>
   {
     setUpdating(true);
-    setIdUpd(id);
-    console.log(id);
+    setIdUpd(vals[0]);
+    setContinent(vals[1]);
+    console.log(vals);
   }
 
   const handleChange= (e:  React.ChangeEvent<HTMLInputElement>) =>{
@@ -71,7 +72,7 @@ const ContinentMain = () => {
                 id: x.id,
                 name: x.name,
                 delete: x.id,
-                update: x.id,
+                update: [x.id, x.name],
               }
             )
           })
@@ -95,11 +96,11 @@ const ContinentMain = () => {
       </form>}
       {updating === true &&
       <form onSubmit={handleUpdate}>
-        <label> Name: <input type="text" onChange={handleChange}></input> </label>
+        <label> Name: <input type="text" value={continent} onChange={handleChange}></input> </label>
         <input type="submit" value="Update"/>
       </form>}
 
-      <div style={{ height: 500, width: '55%' }}>
+      <div style={{ height: 500, width: '76%' }}>
           <DataGrid 
             rows={rows} 
             columns={columns} 

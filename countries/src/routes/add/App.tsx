@@ -11,11 +11,11 @@ import CountryMain from './forms/country/countryMain';
 const App = () => {
   return (
     <div className="App">
-      <Grid container spacing={3} >
-        <Grid item xs={4}>
+      <Grid container spacing={1} >
+        <Grid item xs={3}>
           <ContinentMain/>
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={3}>
         <LanguageMain/>
         </Grid>
         <Grid item xs={4}>

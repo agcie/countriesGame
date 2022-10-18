@@ -11,6 +11,8 @@ const ReligionMain = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [data, setData] = useState< IReligion[] >([]);
+  const [updating, setUpdating] = useState(false);
+  const [idUpd, setIdUpd] = useState(0);
 
   useEffect(() => {
     axios.get<IReligion>(`${baseurl}religions`)
@@ -39,6 +41,27 @@ const ReligionMain = () => {
     .catch((err) => console.log(err))
   }
 
+  const handleUpdate = (e:  React.FormEvent) => {
+    e.preventDefault();
+    axios.put(`${baseurl}religions/${idUpd.toString()}/`,
+    {
+      name: (name.toLowerCase()),
+      description: description,
+    }
+    )
+    .then((response) => console.log(response))
+    .catch((err) => console.log(err))
+  }
+
+  const handleClick = (vals: any) =>
+  {
+    setUpdating(true);
+    setIdUpd(vals[0]);
+    setName(vals[1]);
+    setDescription(vals[2]);
+    console.log(vals);
+  }
+
   const handleChangeName= (e:  React.ChangeEvent<HTMLInputElement>) =>{
     setName(e.currentTarget.value)
   }
@@ -56,6 +79,7 @@ const ReligionMain = () => {
           name: x.name,
           description: x.description,
           delete: x.id,
+          update: [x.id, x.name, x.description],
         }
       )
     })
@@ -64,8 +88,10 @@ const ReligionMain = () => {
     { field: 'id', headerName: 'Id', width: 30 },
     { field: 'name', headerName: 'Name', width: 150 },
     { field: 'description', headerName: 'Description', width: 300 },
-    { field: 'delete', headerName: 'Delete', width: 100, renderCell: (params) => 
+    { field: 'delete', headerName: 'Delete', width: 90, renderCell: (params) => 
       <Button size="small" onClick={(e: any) => {deleteReligion(params.value)}} variant="contained"><DeleteIcon /></Button> },
+    { field: 'update', headerName: 'Update', width: 90, renderCell: (params) => 
+      <Button size="small" onClick={(e: any) => {handleClick(params.value)}} variant="contained">U</Button> },
   ];
 
 
@@ -75,14 +101,23 @@ const ReligionMain = () => {
   return (
     <div className="Religion">
       <h1>Religion</h1>
+      {updating === false &&
       <form onSubmit={handleAdd}>
         <label> Name: <input type="text" onChange={handleChangeName}></input> </label>
         <label> Description: <textarea  onChange={handleChangeDesc}></textarea> </label>
 
         <input type="submit" value="Submit" />
-      </form>
+      </form>}
+
+      {updating === true &&
+      <form onSubmit={handleUpdate}>
+        <label> Name: <input type="text" value={name} onChange={handleChangeName}></input> </label>
+        <label> Description: <textarea value={description}  onChange={handleChangeDesc}></textarea> </label>
+
+        <input type="submit" value="Update" />
+      </form>}
       
-      <div style={{ height: 500, width: '100%' }}>
+      <div style={{ height: 500, width: '112%' }}>
           <DataGrid
             rows={rows} 
             columns={columns}
