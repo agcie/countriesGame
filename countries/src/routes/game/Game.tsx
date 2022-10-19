@@ -341,7 +341,7 @@ const Game = () => {
             <p>{namedPlayer+1} : {playerNames[namedPlayer]}</p>
             {namedPlayer > 0 &&
             <button onClick={prevPlayer}>wstecz</button>}
-            <input value={playerName} onChange={handleName}></input>
+            <input value={playerName} onChange={handleName} maxLength={20}/>
             {namedPlayer < players-1 &&
             <button onClick={nextPlayer}>następny</button>}
             <br />
