@@ -10,6 +10,11 @@ const Level = styled.div`
     width: 30%;
     text-align: center;
 `;
+const Flag = styled.img`
+    border: 1px solid black;
+    width: 100px;
+    height: 60px;
+`;
 const Name= styled.p`
     font-size: 1em;
 `;
@@ -28,25 +33,25 @@ const Play = ( props: PlayProps) => {
 
         {props.level >= 1 &&
             <Level>
-               <b>Powierzchnia:</b> {(props.country.area).toLocaleString()}km2 <br/>
-               <b>PKB:</b> {props.country.GDP} mld$<br/>
-               <b>Symbol waluty:</b> {props.country.currency.symbol}<br/>
-               <b>Domena internetowa:</b> {props.country.web_domain}<br/>
+                <b>Kontynent: </b> {props.country.continent.name}<br/>
+                <b>Powierzchnia:</b> {(props.country.area).toLocaleString()}km2 <br/>
+                <b>PKB:</b> {props.country.GDP} mld$<br/>
+                <b>Populacja:</b> {(props.country.population).toLocaleString()}<br/>
             </Level>
         }
         {props.level >= 2 &&
             <Level>
-               <b>Numer Kierunkowy:</b> {props.country.calling_code}<br/>
+               {/* <b>Numer Kierunkowy:</b> {props.country.calling_code}<br/> */}
                {props.country.driving_on_right && <p>Ruch prawostronny</p>}
                {!props.country.driving_on_right && <p>Ruch lewostronny</p>}
-               <b>Populacja:</b> {(props.country.population).toLocaleString()}<br/>
+               <b>Symbol waluty:</b> {props.country.currency.symbol}<br/>
                <b>Populacja stolicy:</b> {(props.country.capital_city.population).toLocaleString()}<br/>
 
             </Level>
         }
         {props.level >= 3 &&
             <Level>
-                <b>Kontynent: </b> {props.country.continent.name}<br/>
+                
                 <b>Religie panujące w państwie:</b> {
                     props.country.religion.map(e =>
                         <p>{e.name}</p>)
@@ -57,18 +62,20 @@ const Play = ( props: PlayProps) => {
 
         {props.level >= 4 &&
             <Level>
-               <b>Nazwa Waluty:</b> {props.country.currency.name} <br/>
+               <b>Kod Waluty:</b> {props.country.currency.code} <br/>
                <b>Języki urzędowe:</b> {
                     props.country.language.map(e =>
                         <p>{e.name}</p>)
                 }<br/>
+                <b>Stolica:</b> {props.country.capital_city.name}<br/>
+                
             </Level>
         }
         {props.level >= 5 &&
             <Level>
-            <b>Stolica:</b> {props.country.capital_city.name}<br/>
+            <b>Domena internetowa:</b> {props.country.web_domain}<br/>
             <b>Flaga:</b><br/>
-            <img src={props.country.flag_url} width={100} height={60}/>
+            <Flag src={props.country.flag_url} />
             </Level>
         }
         {props.level >= 5 &&

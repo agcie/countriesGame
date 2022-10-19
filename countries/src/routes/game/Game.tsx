@@ -143,7 +143,7 @@ const Game = () => {
         }
       }
       setIsDraw(draw);
-      setWinner(index+1);
+      setWinner(index);
 
     }
 
@@ -367,15 +367,19 @@ const Game = () => {
 
         {isWinner === true && isDraw === false &&
           <div>
-            <h1>Zwycięzca: player{winner}</h1>
-            
+            <h1>Zwycięzca: {playerNames[winner]}</h1>
+            <ul>
+              {playerList.map(({pname, points, isActive}, index) => {return (<Player name={pname} points={points} isCurrent={true} id={index+1}/>)})}
+            </ul>
           </div>
 
         }
         {isWinner === true && isDraw === true &&
           <div>
             <h1>Remis!</h1>
-          
+            <ul>
+              {playerList.map(({pname, points, isActive}, index) => {return (<Player name={pname} points={points} isCurrent={true} id={index+1}/>)})}
+            </ul>
           </div>
         }
 
@@ -391,6 +395,7 @@ const Game = () => {
 
         {end===false &&
         <div>
+          {country.name}
             <DInput type="text"  list="list" placeholder={"Wybierz państwo"}  value={name} onChange={(e: any) =>{ setName(e.target.value)}}/>
             <DList id="list">
             {fullList.filter(({name}) => !(guesses.includes(name))).map(({id, name}) => 
@@ -411,9 +416,6 @@ const Game = () => {
         }
 
         Aktualnie zgaduje:<br/>
-        {/* player1: {playerPoints[0]} <br/>
-        player2: {playerPoints[1]} <br/>
-        player3: {playerPoints[2]} <br/> */}
         <ul>
           {playerList.map(({pname, points, isActive}, index) => {return (<Player name={pname} points={points} isCurrent={isActive} id={index+1}/>)})}
         </ul>
