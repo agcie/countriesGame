@@ -57,11 +57,14 @@ const Game = () => {
   const [guesses, setGuesses] = useState<string[]>([]);
 
   const [playerNames, setPlayerNames] = useState<string[]>(["Player 1", "Player 2"]);
+  const [playerName, setPlayerName] = useState("");
   const [points, setPoints]= useState(20);
   const [currentPlayer, setCurrentPlayer] = useState(0);
   const [players, setPlayers] = useState(2);
   const [playerList, setPlayerList] = useState<PlayerList[]>([{pname: "Player 1", points: 0, isActive: true}, {pname: "Player 2", points: 0, isActive: false}]);
   const [playerPoints, setPlayerPoints] = useState([0, 0]);
+  const [isNaming, setIsNaming] = useState(false);
+  const [namedPlayer, setNamedPlayer] = useState(-1);
   
   const [currentTurn, setCurrentTurn] = useState(0);
   const [currentRound, setCurrentRound] = useState(1);
@@ -88,8 +91,17 @@ const Game = () => {
       } )
     }
 
+    const namePlayers = () =>
+    {
+      for(let i = 0; i<players; i++)
+      {
+        playerList[i].pname = playerNames[i];
+      }
+    }
+
     const getRandomCountry = async () =>
     {
+      
       console.log(playerList);
       console.log(playerNames);
       if(currentPlayer===players)
@@ -257,6 +269,57 @@ const Game = () => {
       }
     }
 
+    const handleNaming = () =>
+    {
+      setIsNaming(true);
+      setNamedPlayer(0);
+      console.log(playerNames);
+    }
+
+    const nextPlayer = () =>
+    {
+      setNamedPlayer(namedPlayer+1)
+      console.log(playerName)
+      if(playerName !== "")
+      {
+        playerNames[namedPlayer] = playerName;
+        setPlayerName("");
+      }
+      setPlayerNames(playerNames);
+      
+      console.log(playerNames);
+    }
+
+    const prevPlayer = () =>
+    {
+      setNamedPlayer(namedPlayer-1)
+      console.log(playerName)
+      if(playerName !== "")
+      {
+        playerNames[namedPlayer] = playerName;
+        setPlayerName("");
+      }
+      setPlayerNames(playerNames);
+      
+      console.log(playerNames);
+    }
+
+    const handleName = (e: any) =>
+    {
+        setPlayerName(e.currentTarget.value);
+    }
+    const handleDone = () =>
+    {
+      if(playerName !== "")
+      {
+        playerNames[namedPlayer] = playerName;
+        setPlayerName("");
+      }
+      setPlayerNames(playerNames);
+      setIsNaming(false);
+      namePlayers();
+      console.log(playerNames);
+    }
     
     
 
@@ -270,6 +333,21 @@ const Game = () => {
           <Button onClick={addPlayer}>+</Button> 
           {players}
           <Button onClick={subPlayer}>-</Button>
+
+          <button onClick={handleNaming}>Nazwij Graczy</button>
+
+          {isNaming &&
+          <div>
+            <p>{namedPlayer+1} : {playerNames[namedPlayer]}</p>
+            {namedPlayer > 0 &&
+            <button onClick={prevPlayer}>wstecz</button>}
+            <input value={playerName} onChange={handleName}></input>
+            {namedPlayer < players-1 &&
+            <button onClick={nextPlayer}>następny</button>}
+            <br />
+            <button onClick={handleDone}>gotowe</button>
+          </div>
+          }
           
           <h2>Liczba rund</h2>
           
