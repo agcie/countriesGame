@@ -7,20 +7,48 @@ import ICountry from '../add/api-ifc/ICountry';
 import ILanguage from '../add/api-ifc/ILanguage';
 import Play from './Play';
 import Player from './Player';
+import {FiMap} from 'react-icons/fi';
+import { AiOutlineCheckCircle } from "react-icons/ai";
+import { BsPerson} from "react-icons/bs";
+import {CiEdit} from "react-icons/ci";
+import {MdDoneOutline} from "react-icons/md";
+import PlayersView from './PlayersView';
 
 const Button = styled.button`
   border: none;
   font-size: 2em;
-  margin: 50px;
-  padding: 15px;
+  font-family: "Amatic SC";
+  margin: 30px;
+  padding: 10px;
   border-radius: 20px;
+  font-style: bold;
   color: white;
   box-shadow: 5px 5px 5px;
-  background-image: linear-gradient(pink, purple);
+  background-image: linear-gradient(lightgreen, green);
   text-decoration: none;
   &:hover {
     color: black;
   }
+`;
+const SmallButton= styled(Button)`
+font-size: 1em;
+margin: 3px;
+padding: 6px;
+`;
+
+const PlayerDiv = styled.div`
+text-align: center;
+font-family:"Cinzel";
+
+margin: 10px;
+font-size: 1.2em;
+`;
+
+const Plus = styled(Button)`
+font-family: "Arial";
+padding-left: 20px;
+padding-right: 20px;
+border-radius: 30px;
 `
 
 const DList = styled.datalist`
@@ -33,6 +61,56 @@ const DInput = styled.input`
   margin: 20px;
   
   font-size: 1em;
+`;
+
+const BigTitle = styled.h1`
+text-align: center;
+font-family: "Amatic SC";
+font-style: bold;
+font-size: 3em;
+color: green;
+text-shadow: 3px 3px 5px white;
+`;
+const BiggestTitle = styled(BigTitle)`
+font-size: 4em;
+`;
+const SmallTitle = styled.h3`
+text-align: center;
+font-family: "Amatic SC";
+font-style: bold;
+font-size: 1.7em;
+text-shadow: 1px 1px 3px grey;
+color: green;
+`;
+const NumberOf = styled(SmallTitle)`
+text-align: left;
+display: inline;
+`;
+const GameConfigCont = styled.div`
+display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
+`;
+
+const GameConfigBlock = styled.div`
+background-color: white;
+border: 1px solid rgba(0, 0, 0, 0.8);
+margin: 20px;
+border-radius: 20px;
+`;
+
+const CenterButton= styled.div`
+text-align: center;
+`;
+const Adding = styled.div`
+text-align: center;
+`;
+const Hard = styled.div`
+text-align: center;
+font-family:"Cinzel";
+
+margin: 10px;
+font-size: 1.2em;
 `;
 const baseurl ="http://127.0.0.1:8000/";
 
@@ -57,53 +135,43 @@ const Game = () => {
   const [guesses, setGuesses] = useState<string[]>([]);
 
   const [playerNames, setPlayerNames] = useState<string[]>(["Player 1", "Player 2"]);
-  const [playerName, setPlayerName] = useState("");
   const [points, setPoints]= useState(20);
   const [currentPlayer, setCurrentPlayer] = useState(0);
   const [players, setPlayers] = useState(2);
   const [playerList, setPlayerList] = useState<PlayerList[]>([{pname: "Player 1", points: 0, isActive: true}, {pname: "Player 2", points: 0, isActive: false}]);
   const [playerPoints, setPlayerPoints] = useState([0, 0]);
-  const [isNaming, setIsNaming] = useState(false);
-  const [namedPlayer, setNamedPlayer] = useState(-1);
+
   
   const [currentTurn, setCurrentTurn] = useState(0);
   const [currentRound, setCurrentRound] = useState(1);
   const [rounds, setRounds] = useState(3);
   const [end, setEnd] = useState(false);
 
-  const [diff, setDiff] = useState<number>(Number(1));
+  const [diff, setDiff] = useState<number>(Number(0));
+  const [edit, setEdit] = useState([false,false]);
+  const [nameToChange, setNameToChange] = useState(["", ""]);
 
-
-  useEffect(() => {
-    axios.get<ICountriesList[]>(`${baseurl}countries/list/id`)
-    .then((response : AxiosResponse)  =>
-    {
-        setFullList(response.data);
-        setList(response.data);
-    } ) }, []);
+    useEffect(() => {
+      axios.get<ICountriesList[]>(`${baseurl}countries/list/id`)
+      .then((response : AxiosResponse)  =>
+      {
+          setFullList(response.data);
+          setList(response.data);
+      } ) }, []);
 
     const changeDifficulty = (e: any) => {
       setDiff(e.currentTarget.value)
-      axios.get<ICountriesList[]>(`${baseurl}countries/list/id${e.currentTarget.value}`)
+
+      const str = e.currentTarget.value == 0 ? "" : `?difficulty=${e.currentTarget.value}`;
+      axios.get<ICountriesList[]>(`${baseurl}countries/list/id${str}`)
       .then((response : AxiosResponse)  =>
       {
           setList(response.data);
       } )
     }
 
-    const namePlayers = () =>
-    {
-      for(let i = 0; i<players; i++)
-      {
-        playerList[i].pname = playerNames[i];
-      }
-    }
-
     const getRandomCountry = async () =>
     {
-      
-      console.log(playerList);
-      console.log(playerNames);
       if(currentPlayer===players)
       {
         setCurrentPlayer(0);
@@ -118,7 +186,6 @@ const Game = () => {
 
       } )
     }
-
 
     const getIdFromCountry = (name: string) =>
     {
@@ -218,7 +285,7 @@ const Game = () => {
         else{
             setEnd(true);
             setList(list.filter(x => !(x.id == country!.id)))
-            console.log(list);
+
             setName("");
             let tab = playerPoints;
             playerPoints[currentPlayer]+=(points*country.difficulty);
@@ -239,6 +306,8 @@ const Game = () => {
         setPlayerPoints([...playerPoints, 0]);
         setPlayerList([...playerList, {pname: `Player ${players+1}`, points: 0, isActive: false}]);
         setPlayerNames([...playerNames, `Player ${players+1}`]);
+        setEdit([...edit, false]);
+        setNameToChange([...nameToChange, ""]);
       }
     }
     const subPlayer = () =>
@@ -249,6 +318,8 @@ const Game = () => {
         setPlayerPoints([...playerPoints].splice(0, players-1));
         setPlayerList([...playerList].splice(0, players-1));
         setPlayerNames([...playerNames].splice(0, players-1));
+        setEdit([...edit].splice(0, players-1));
+        setNameToChange([...nameToChange].splice(0, players-1));
       }
     }
 
@@ -269,159 +340,215 @@ const Game = () => {
       }
     }
 
-    const handleNaming = () =>
+    const editPlayer = (idx: number) =>
     {
-      setIsNaming(true);
-      setNamedPlayer(0);
-      console.log(playerNames);
+      setEdit(edit.map((x, id) => {
+        if(id==idx)
+      {
+        return !x;
+      }
+      return x;}
+      ))
     }
 
-    const nextPlayer = () =>
+    const setNewName = (idx: number) =>
     {
-      setNamedPlayer(namedPlayer+1)
-      console.log(playerName)
-      if(playerName !== "")
+      const newName = nameToChange[idx];
+      setPlayerNames(playerNames.map((x, id) =>
       {
-        playerNames[namedPlayer] = playerName;
-        setPlayerName("");
+        if(id==idx)
+            {
+              return newName;
+            }
+            else
+            {
+              return x;
+            }
+      }));
+      setPlayerList(playerList.map((x, id) =>
+      { 
+        if(id==idx)
+            {
+              return {pname: newName, points: x.points, isActive: x.isActive};
+            }
+            else
+            {
+              return x;
+            }
+      }));
+      setNameToChange(nameToChange.map((x, id) => 
+        {
+            if(id==idx)
+            {
+              return "";
+            }
+            else
+            {
+              return x;
+            }
+        }
+      ));
+      setEdit(edit.map((x, id) => {
+        if(id==idx)
+      {
+        return !x;
       }
-      setPlayerNames(playerNames);
+      return x;}
+      ))
       
-      console.log(playerNames);
     }
 
-    const prevPlayer = () =>
+    const updateNamesToChange = (e: any, idx: number) =>
     {
-      setNamedPlayer(namedPlayer-1)
-      console.log(playerName)
-      if(playerName !== "")
-      {
-        playerNames[namedPlayer] = playerName;
-        setPlayerName("");
-      }
-      setPlayerNames(playerNames);
-      
-      console.log(playerNames);
-    }
+      setNameToChange(nameToChange.map((x, id) => 
+        {
+            if(id==idx)
+            {
+              return e.target.value;
+            }
+            else
+            {
+              return x;
+            }
 
-    const handleName = (e: any) =>
-    {
-        setPlayerName(e.currentTarget.value);
-    }
-    const handleDone = () =>
-    {
-      if(playerName !== "")
-      {
-        playerNames[namedPlayer] = playerName;
-        setPlayerName("");
-      }
-      setPlayerNames(playerNames);
-      setIsNaming(false);
-      namePlayers();
-      console.log(playerNames);
+        }
+      ));
     }
     
     
 
     return (
       <div className="Game">
-        <h1>Countries Game</h1>
+        <BiggestTitle><FiMap/> Gra w państwa</BiggestTitle>
         {country == null &&
         <div>
-          <h2>Liczba graczy</h2>
-          
-          <Button onClick={addPlayer}>+</Button> 
-          {players}
-          <Button onClick={subPlayer}>-</Button>
+        <GameConfigCont>
+        <GameConfigBlock>
+          <SmallTitle><span className="material-symbols-outlined">group</span> Liczba graczy</SmallTitle>
+          <Adding>
+          <Plus onClick={addPlayer}>+</Plus> 
+          <NumberOf>{players}</NumberOf>
+          <Plus onClick={subPlayer}>-</Plus>
+          </Adding>
 
-          <button onClick={handleNaming}>Nazwij Graczy</button>
+          </GameConfigBlock>
+          <GameConfigBlock>
+          <SmallTitle><AiOutlineCheckCircle/> Liczba rund</SmallTitle>
+          <Adding>
+          <Plus onClick={addRound}>+</Plus> 
+          <NumberOf>{rounds}</NumberOf>
+          <Plus onClick={subRound}>-</Plus> 
+          </Adding>
+        </GameConfigBlock>
 
-          {isNaming &&
-          <div>
-            <p>{namedPlayer+1} : {playerNames[namedPlayer]}</p>
-            {namedPlayer > 0 &&
-            <button onClick={prevPlayer}>wstecz</button>}
-            <input value={playerName} onChange={handleName} maxLength={20}/>
-            {namedPlayer < players-1 &&
-            <button onClick={nextPlayer}>następny</button>}
-            <br />
-            <button onClick={handleDone}>gotowe</button>
-          </div>
+        <GameConfigBlock> 
+          {
+          playerNames.map((x, idx) => {return <div>
+            {edit[idx] === false &&          
+              <PlayerDiv><BsPerson/> {x} {edit[idx]}<SmallButton onClick={() => editPlayer(idx)}><CiEdit/></SmallButton ></PlayerDiv>
+            }
+            {edit[idx] === true &&  
+              <PlayerDiv><input type="text"  onChange={(e) => updateNamesToChange(e, idx) }/> <SmallButton onClick={() => setNewName(idx)}><MdDoneOutline/></SmallButton ></PlayerDiv>
+            }
+            </div>
+          })
           }
-          
-          <h2>Liczba rund</h2>
-          
-          <Button onClick={addRound}>+</Button> 
-          {rounds}
-          <Button onClick={subRound}>-</Button>
+          {edit.map(x => {
+              return <div>
+                {x}
+              </div>
+          })}
+        
+        </GameConfigBlock>
 
-          <select defaultValue={0} onChange={changeDifficulty}>
-          <option value={""}>Wszystko</option>
-          <option value={"?difficulty=1"}>Łatwy</option>
-          <option value={"?difficulty=2"}>Średni</option>
-          <option value={"?difficulty=3"}>Trudny</option>
-        </select>
-          <Button onClick={getRandomCountry}>Start</Button>
+        <GameConfigBlock>         
+        <SmallTitle>Poziom Trudności</SmallTitle> 
+        <Hard>
+              <input type="radio"
+                value="0"
+                checked={diff==0}
+                onChange={changeDifficulty} />Wszystko
+        </Hard>
+        <Hard>
+              <input type="radio"
+               value="1"
+               checked={diff==1}
+               onChange={changeDifficulty} />Łatwy
+        </Hard>
+        <Hard>
+              <input type="radio"
+               value="2"
+               checked={diff==2}
+               onChange={changeDifficulty} />Średni
+      </Hard>
+       <Hard>
+              <input type="radio"
+               value="3"
+               checked={diff==3}
+               onChange={changeDifficulty} />Trudny
+        </Hard>
+        </GameConfigBlock>
+        </GameConfigCont>
+         <CenterButton> <Button onClick={getRandomCountry}>Start</Button></CenterButton>
         </div>
         }
 
-        {isWinner === true && isDraw === false &&
-          <div>
-            <h1>Zwycięzca: {playerNames[winner]}</h1>
-            <ul>
-              {playerList.map(({pname, points, isActive}, index) => {return (<Player name={pname} points={points} isCurrent={true} id={index+1}/>)})}
-            </ul>
+        {isWinner === true && 
+        <div>
+          <ul>
+          <PlayersView players={playerList} ended={true}/> 
+          </ul>
+            {isDraw === false &&
+              <div>
+                <BigTitle>Zwycięzca: {playerNames[winner]}</BigTitle>
+              </div>
+            }
+            {isDraw === true &&
+              <div>
+                <BigTitle>Remis!</BigTitle>
+              </div>
+            }
           </div>
-
-        }
-        {isWinner === true && isDraw === true &&
-          <div>
-            <h1>Remis!</h1>
-            <ul>
-              {playerList.map(({pname, points, isActive}, index) => {return (<Player name={pname} points={points} isCurrent={true} id={index+1}/>)})}
-            </ul>
-          </div>
-        }
+          }
 
        {country != null && isWinner === false &&
         <div>
-        <h1>Runda {currentRound}</h1>
+        <BigTitle>Runda {currentRound}</BigTitle>
+
+    
+
         {end===true &&
           <div>
-            <h1>Zgadłeś!</h1>
+            <BigTitle>Zgadłeś!</BigTitle>
             <Button onClick={getRandomCountry}>Następny Gracz </Button>
           </div>
         }
 
         {end===false &&
-        <div>
-          {country.name}
+          <GameConfigCont>
+          <GameConfigBlock><Play country={country} level={level}/></GameConfigBlock>
+    
+          <GameConfigBlock>
             <DInput type="text"  list="list" placeholder={"Wybierz państwo"}  value={name} onChange={(e: any) =>{ setName(e.target.value)}}/>
             <DList id="list">
             {fullList.filter(({name}) => !(guesses.includes(name))).map(({id, name}) => 
                 {return (<option value={name}/>)})}
             </DList>
-
           <button onClick={submitCountry}>Zgaduje</button>
 
-          <Play country={country} level={level}/>
-          <h3>Możesz zdobyć w tej rundzie: </h3>
-          {points*country.difficulty} punktów
-          <h3>Twoj próby:</h3>
+
+          <SmallTitle>Możesz zdobyć w tej rundzie:  {points*country.difficulty} punktów</SmallTitle>
+          <SmallTitle>Twoje próby:</SmallTitle>
           {guesses.map(e => { return (<div> {e} </div>)})}
           <br/>
-        </div>
+          </GameConfigBlock>
+      </GameConfigCont>
 
        
         }
-
-        Aktualnie zgaduje:<br/>
-        <ul>
-          {playerList.map(({pname, points, isActive}, index) => {return (<Player name={pname} points={points} isCurrent={isActive} id={index+1}/>)})}
-        </ul>
+          <PlayersView players={playerList} ended={false}/>   
+      </div>}
       </div>
-      
-      }</div>
     );
   }
 

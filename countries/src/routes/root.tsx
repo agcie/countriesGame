@@ -5,6 +5,7 @@ const Cont = styled.div`
 margin-left: 25%;
 margin-top: 15%;
 padding: 10px;
+background-color: lightgreen;
 `;
 
 const Link = styled.a`
