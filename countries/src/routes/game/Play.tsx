@@ -2,6 +2,21 @@ import React from 'react';
 import styled from 'styled-components';
 import ICountry from '../add/api-ifc/ICountry';
 
+import {BiWorld} from 'react-icons/bi';
+import {MdMonetizationOn}from 'react-icons/md';
+import {IoIosPeople}from 'react-icons/io';
+import {CgMaximize}from 'react-icons/cg';
+import {AiFillCar}from 'react-icons/ai';
+import {GrCurrency}from 'react-icons/gr';
+import {BsFillTelephoneFill}from 'react-icons/bs';
+import {FaCross}from 'react-icons/fa';
+import {BsGeoAltFill}from 'react-icons/bs';
+import {TbLanguage}from 'react-icons/tb';
+import {FaCity}from 'react-icons/fa';
+import {MdComputer}from 'react-icons/md';
+
+//import {}from 'react-icons/';
+
 
 const Level = styled.div`
     margin: 20px;
@@ -11,9 +26,11 @@ const Level = styled.div`
     text-align: center;
 `;
 const Flag = styled.img`
-    border: 1px solid black;
-    width: 100px;
-    height: 60px;
+padding: 3px;
+background-color: black;
+border-radius: 5px;
+
+    width: 150px;
 `;
 const Name= styled.p`
     font-size: 1em;
@@ -33,49 +50,49 @@ const Play = ( props: PlayProps) => {
 
         {props.level >= 1 &&
             <Level>
-                <b>Kontynent: </b> {props.country.continent.name}<br/>
-                <b>Powierzchnia:</b> {(props.country.area).toLocaleString()}km2 <br/>
-                <b>PKB:</b> {props.country.GDP} mld$<br/>
-                <b>Populacja:</b> {(props.country.population).toLocaleString()}<br/>
+                <b> <BiWorld/> Kontynent: </b> {props.country.continent.name}<br/>
+                <b><CgMaximize/>Powierzchnia:</b> {(props.country.area).toLocaleString()}km2 <br/>
+                <b><MdMonetizationOn/> PKB:</b> {props.country.GDP} mld$<br/>
+                <b> <IoIosPeople/> Populacja:</b> {(props.country.population).toLocaleString()}<br/>
             </Level>
         }
         {props.level >= 2 &&
             <Level>
-               {/* <b>Numer Kierunkowy:</b> {props.country.calling_code}<br/> */}
-               {props.country.driving_on_right && <p>Ruch prawostronny</p>}
-               {!props.country.driving_on_right && <p>Ruch lewostronny</p>}
-               <b>Symbol waluty:</b> {props.country.currency.symbol}<br/>
-               <b>Populacja stolicy:</b> {(props.country.capital_city.population).toLocaleString()}<br/>
+                <b><BsFillTelephoneFill/>Numer Kierunkowy:</b> {props.country.calling_code}<br/> 
+               {props.country.driving_on_right && <p> <AiFillCar/> Ruch prawostronny</p>}
+               {!props.country.driving_on_right && <p> <AiFillCar/> Ruch lewostronny</p>}
+               <b> <GrCurrency/> Symbol waluty:</b> {props.country.currency.symbol}<br/>
+               <b><IoIosPeople/>Populacja stolicy:</b> {(props.country.capital_city.population).toLocaleString()}<br/>
 
             </Level>
         }
         {props.level >= 3 &&
             <Level>
                 
-                <b>Religie panujące w państwie:</b> {
+                <b><FaCross/> Religie panujące w państwie:</b> {
                     props.country.religion.map(e =>
                         <p>{e.name}</p>)
                 }<br/>
-                <b>Współrzędne stolicy:</b> {props.country.capital_city.latitude} {props.country.capital_city.longitude}<br/>
+                <b><BsGeoAltFill/> Współrzędne stolicy:</b> {props.country.capital_city.latitude} {props.country.capital_city.longitude}<br/>
             </Level>
         }
 
         {props.level >= 4 &&
             <Level>
-               <b>Kod Waluty:</b> {props.country.currency.code} <br/>
-               <b>Języki urzędowe:</b> {
+               <b><GrCurrency/> Kod Waluty:</b> {props.country.currency.code} <br/>
+               <b><TbLanguage/> Języki urzędowe:</b> {
                     props.country.language.map(e =>
                         <p>{e.name}</p>)
                 }<br/>
-                <b>Stolica:</b> {props.country.capital_city.name}<br/>
+                <b><FaCity/>Stolica:</b> {props.country.capital_city.name}<br/>
                 
             </Level>
         }
         {props.level >= 5 &&
             <Level>
-            <b>Domena internetowa:</b> {props.country.web_domain}<br/>
+            <b><MdComputer/>Domena internetowa:</b> {props.country.web_domain}<br/>
             <b>Flaga:</b><br/>
-            <Flag src={props.country.flag_url} />
+            <Flag  src={props.country.flag_url} />
             </Level>
         }
         {props.level >= 5 &&

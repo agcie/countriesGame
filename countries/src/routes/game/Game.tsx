@@ -53,16 +53,19 @@ border-radius: 30px;
 
 const DList = styled.datalist`
   font-size: 4em;
-  & option{
-    font-size: 4em;
-  }
+color: red;
 `;
 const DInput = styled.input`
   margin: 20px;
-  
-  font-size: 1em;
+  font-size: 4em;
+  border-radius: 10px;
+  border: 5px dotted black;
+  box-shadow: 10px 10px;
 `;
-
+const DOption = styled.option`
+font-size: 4em;
+color: red;
+`;
 const BigTitle = styled.h1`
 text-align: center;
 font-family: "Amatic SC";
@@ -525,28 +528,32 @@ const Game = () => {
         }
 
         {end===false &&
-          <GameConfigCont>
-          <GameConfigBlock><Play country={country} level={level}/></GameConfigBlock>
-    
-          <GameConfigBlock>
+        <div>
             <DInput type="text"  list="list" placeholder={"Wybierz państwo"}  value={name} onChange={(e: any) =>{ setName(e.target.value)}}/>
             <DList id="list">
             {fullList.filter(({name}) => !(guesses.includes(name))).map(({id, name}) => 
-                {return (<option value={name}/>)})}
+                {return (<DOption value={name}/>)})}
             </DList>
           <button onClick={submitCountry}>Zgaduje</button>
+          <GameConfigCont>
+          <GameConfigBlock>
 
 
-          <SmallTitle>Możesz zdobyć w tej rundzie:  {points*country.difficulty} punktów</SmallTitle>
-          <SmallTitle>Twoje próby:</SmallTitle>
-          {guesses.map(e => { return (<div> {e} </div>)})}
-          <br/>
+<SmallTitle>Możesz zdobyć w tej rundzie:  {points*country.difficulty} punktów</SmallTitle>
+<SmallTitle>Twoje próby:</SmallTitle>
+{guesses.map(e => { return (<div> {e} </div>)})}
+<br/>
+<PlayersView players={playerList} ended={false}/>   
+</GameConfigBlock>
+          <GameConfigBlock>
+            <Play country={country} level={level}/>
           </GameConfigBlock>
-      </GameConfigCont>
 
+      </GameConfigCont>
+      </div>
        
         }
-          <PlayersView players={playerList} ended={false}/>   
+         
       </div>}
       </div>
     );
