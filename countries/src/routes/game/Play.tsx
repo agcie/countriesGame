@@ -17,12 +17,16 @@ import {MdComputer}from 'react-icons/md';
 
 //import {}from 'react-icons/';
 
+const Levels = styled.div`
+display: grid;
+grid-template-columns: 1fr 1fr;
+`;
 
 const Level = styled.div`
     margin: 20px;
     padding: 20px;
-    border: 1px solid black;
-    width: 30%;
+    font-family:"Cinzel";
+    font-size: 1.5em;
     text-align: center;
 `;
 const Flag = styled.img`
@@ -45,7 +49,7 @@ interface PlayProps{
 
 const Play = ( props: PlayProps) => {
      return (
-      <div className="Play">
+      <Levels>
 
 
         {props.level >= 1 &&
@@ -101,7 +105,7 @@ const Play = ( props: PlayProps) => {
         </Level>
         }
     
-    </div>
+    </Levels>
 
     )
   }

@@ -20,6 +20,7 @@ interface PlayerProps{
     id: number;
     points: number;
     isCurrent: boolean;
+    currentPoints: number;
 }
 
 const Player = (props: PlayerProps) => {
@@ -28,7 +29,7 @@ const Player = (props: PlayerProps) => {
     return(
         <Cont active={props.isCurrent}>
             {props.isCurrent === true &&
-                <h2>{props.name}: {props.points}</h2>
+                <h2>{props.name}: {props.points} + {props.currentPoints}</h2>
             }
             {props.isCurrent === false &&
                 <h4>{props.name}: {props.points}</h4>

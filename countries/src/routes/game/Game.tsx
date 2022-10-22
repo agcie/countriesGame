@@ -30,6 +30,9 @@ const Button = styled.button`
     color: black;
   }
 `;
+
+const All = styled.div`
+width: 100%`;
 const SmallButton= styled(Button)`
 font-size: 1em;
 margin: 3px;
@@ -57,10 +60,11 @@ color: red;
 `;
 const DInput = styled.input`
   margin: 20px;
-  font-size: 4em;
+  font-size: 2em;
   border-radius: 10px;
-  border: 5px dotted black;
   box-shadow: 10px 10px;
+  text-align:center;
+  font-family:"Cinzel";
 `;
 const DOption = styled.option`
 font-size: 4em;
@@ -84,6 +88,7 @@ font-style: bold;
 font-size: 1.7em;
 text-shadow: 1px 1px 3px grey;
 color: green;
+margin-bottom: 0px;
 `;
 const NumberOf = styled(SmallTitle)`
 text-align: left;
@@ -94,24 +99,30 @@ display: grid;
   grid-template-columns: auto auto;
   grid-template-rows: auto auto;
 `;
-
+const GameCont = styled.div`
+display: grid;
+  grid-template-columns: 1fr 4fr;
+  grid-template-rows: auto auto;
+`;
 const GameConfigBlock = styled.div`
 background-color: white;
 border: 1px solid rgba(0, 0, 0, 0.8);
 margin: 20px;
 border-radius: 20px;
 `;
-
+const GameConfigBlockPlayers = styled(GameConfigBlock)`
+border: 0px solid white;
+`;
 const CenterButton= styled.div`
 text-align: center;
 `;
 const Adding = styled.div`
+margin-top:0px;
 text-align: center;
 `;
 const Hard = styled.div`
 text-align: center;
 font-family:"Cinzel";
-
 margin: 10px;
 font-size: 1.2em;
 `;
@@ -421,7 +432,7 @@ const Game = () => {
     
 
     return (
-      <div className="Game">
+      <All>
         <BiggestTitle><FiMap/> Gra w państwa</BiggestTitle>
         {country == null &&
         <div>
@@ -499,7 +510,7 @@ const Game = () => {
         {isWinner === true && 
         <div>
           <ul>
-          <PlayersView players={playerList} ended={true}/> 
+          <PlayersView players={playerList} ended={true} currentPoints={0}/> 
           </ul>
             {isDraw === false &&
               <div>
@@ -516,46 +527,46 @@ const Game = () => {
 
        {country != null && isWinner === false &&
         <div>
-        <BigTitle>Runda {currentRound}</BigTitle>
+
 
     
 
         {end===true &&
           <div>
             <BigTitle>Zgadłeś!</BigTitle>
-            <Button onClick={getRandomCountry}>Następny Gracz </Button>
+            <CenterButton> <Button onClick={getRandomCountry}>Następny Gracz </Button></CenterButton>
           </div>
         }
 
         {end===false &&
         <div>
-            <DInput type="text"  list="list" placeholder={"Wybierz państwo"}  value={name} onChange={(e: any) =>{ setName(e.target.value)}}/>
+          <GameConfigBlockPlayers>
+            <CenterButton> <DInput type="text"  list="list" placeholder={"Wybierz państwo"}  value={name} onChange={(e: any) =>{ setName(e.target.value)}}/>
             <DList id="list">
             {fullList.filter(({name}) => !(guesses.includes(name))).map(({id, name}) => 
                 {return (<DOption value={name}/>)})}
             </DList>
-          <button onClick={submitCountry}>Zgaduje</button>
-          <GameConfigCont>
+          <Button onClick={submitCountry}>Zgaduje</Button></CenterButton>
+          </GameConfigBlockPlayers>
+          <GameCont>
+          <GameConfigBlockPlayers>
+          <BigTitle>Runda {currentRound}</BigTitle>
+          <PlayersView players={playerList} ended={false} currentPoints={points*country.difficulty }/>   
+          </GameConfigBlockPlayers>
           <GameConfigBlock>
+          <Play country={country} level={level}/>
+         </GameConfigBlock>
 
-
-<SmallTitle>Możesz zdobyć w tej rundzie:  {points*country.difficulty} punktów</SmallTitle>
-<SmallTitle>Twoje próby:</SmallTitle>
-{guesses.map(e => { return (<div> {e} </div>)})}
-<br/>
-<PlayersView players={playerList} ended={false}/>   
-</GameConfigBlock>
-          <GameConfigBlock>
-            <Play country={country} level={level}/>
-          </GameConfigBlock>
-
-      </GameConfigCont>
+      </GameCont>
+      <SmallTitle>Twoje próby:</SmallTitle>
+        {guesses.map(e => { return (<div> {e} </div>)})}
+        <br/>
       </div>
        
         }
          
       </div>}
-      </div>
+      </All>
     );
   }
 
