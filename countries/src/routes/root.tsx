@@ -28,7 +28,7 @@ export default function Root()
 {
     return (
       <Cont id="menu">
-          <Link href={`game`}>Game</Link>
+          <Link href={`gameconf`}>Game</Link>
           <Link href={`add`}>Add</Link>
       </Cont>
     );

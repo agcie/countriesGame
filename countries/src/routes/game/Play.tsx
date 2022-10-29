@@ -54,6 +54,7 @@ const Play = ( props: PlayProps) => {
 
         {props.level >= 1 &&
             <Level>
+                {props.country.name}
                 <b> <BiWorld/> Kontynent: </b> {props.country.continent.name}<br/>
                 <b><CgMaximize/>Powierzchnia:</b> {(props.country.area).toLocaleString()}km2 <br/>
                 <b><MdMonetizationOn/> PKB:</b> {props.country.GDP} mld$<br/>

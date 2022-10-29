@@ -128,14 +128,21 @@ font-size: 1.2em;
 `;
 const baseurl ="http://127.0.0.1:8000/";
 
-interface PlayerList{
+interface Player{
   pname: string;
   points: number;
   isActive: boolean;
 }
 
+interface GameProps{
+  playersNum: number;
+  playerList: Array<Player>;
+  rounds: number;
+  diff: number;
+}
 
-const Game = () => {
+
+const Game = (props: GameProps) => {
 
   const [fullList, setFullList] = useState<ICountriesList[]>([]);
   const [list, setList] = useState<ICountriesList[]>([]);
@@ -148,12 +155,10 @@ const Game = () => {
   const [winner, setWinner] = useState(0);
   const [guesses, setGuesses] = useState<string[]>([]);
 
-  const [playerNames, setPlayerNames] = useState<string[]>(["Player 1", "Player 2"]);
   const [points, setPoints]= useState(20);
   const [currentPlayer, setCurrentPlayer] = useState(0);
-  const [players, setPlayers] = useState(2);
-  const [playerList, setPlayerList] = useState<PlayerList[]>([{pname: "Player 1", points: 0, isActive: true}, {pname: "Player 2", points: 0, isActive: false}]);
-  const [playerPoints, setPlayerPoints] = useState([0, 0]);
+  const [players, setPlayers] = useState(1);
+  const [playerList, setPlayerList] = useState<Player[]>([{pname: "Player 1", points: 0, isActive: true}]);
 
   
   const [currentTurn, setCurrentTurn] = useState(0);
@@ -162,8 +167,6 @@ const Game = () => {
   const [end, setEnd] = useState(false);
 
   const [diff, setDiff] = useState<number>(Number(0));
-  const [edit, setEdit] = useState([false,false]);
-  const [nameToChange, setNameToChange] = useState(["", ""]);
 
     useEffect(() => {
       axios.get<ICountriesList[]>(`${baseurl}countries/list/id`)
@@ -186,6 +189,7 @@ const Game = () => {
 
     const getRandomCountry = async () =>
     {
+      console.log(playerList)
       if(currentPlayer===players)
       {
         setCurrentPlayer(0);
@@ -214,11 +218,11 @@ const Game = () => {
       let index = 0;
       for(let i = 0; i < players; i++)
       {
-        if(playerPoints[i] > max)
+        if(playerList[i].points > max)
         {
           index = i;
-          max = playerPoints[i];
-        } else if(playerPoints[i] === max)
+          max = playerList[i].points;
+        } else if(playerList[i].points === max)
         {
           draw = true;
         }
@@ -244,29 +248,28 @@ const Game = () => {
 
     const changePlayer = () =>
     {
-      let temp = [];
-        setCurrentPlayer(currentPlayer+1);
+      setCurrentPlayer(currentPlayer+1);
 
       for(let i = 0; i<players; i++)
       {
         if(i-1===currentPlayer)
-        {     
-          temp.push({pname: playerNames[i], points: playerPoints[i], isActive: true});
+        {
+          playerList[i].isActive = true;
         }
         else if(currentPlayer+1-players===i)
         {
-          temp.push({pname: playerNames[i], points: playerPoints[i], isActive: true});
+          playerList[i].isActive = true;
         }
         else
         {
-          temp.push({pname: playerNames[i], points: playerPoints[i], isActive: false});
+          playerList[i].isActive = false;
         } 
       }
       if(currentPlayer===players-1)
       {
         setCurrentPlayer(0);
       }
-      setPlayerList(temp);
+      setPlayerList(playerList);
       setEnd(true);
     }
 
@@ -283,8 +286,8 @@ const Game = () => {
               setEnd(true);
               setList(list.filter(x => !(x.id == country!.id)))
               setName("");
-              playerPoints[currentPlayer]+=0;
-              setPlayerPoints(playerPoints);
+              playerList[currentPlayer].points+=0;
+              setPlayerList(playerList);
               setGuesses([]);
               setCurrentTurn(currentTurn+1);
               checkWin();
@@ -301,9 +304,7 @@ const Game = () => {
             setList(list.filter(x => !(x.id == country!.id)))
 
             setName("");
-            let tab = playerPoints;
-            playerPoints[currentPlayer]+=(points*country.difficulty);
-            setPlayerPoints(playerPoints);
+            playerList[currentPlayer].points+=(points*country.difficulty);
             setGuesses([]);
             setCurrentTurn(currentTurn+1);
             checkWin();
@@ -312,197 +313,12 @@ const Game = () => {
         
     }
 
-    const addPlayer = () =>
-    {  
-      if(players<10)
-      {
-        setPlayers(players+1);
-        setPlayerPoints([...playerPoints, 0]);
-        setPlayerList([...playerList, {pname: `Player ${players+1}`, points: 0, isActive: false}]);
-        setPlayerNames([...playerNames, `Player ${players+1}`]);
-        setEdit([...edit, false]);
-        setNameToChange([...nameToChange, ""]);
-      }
-    }
-    const subPlayer = () =>
-    {
-      if(players > 2)
-      {
-        setPlayers(players-1);
-        setPlayerPoints([...playerPoints].splice(0, players-1));
-        setPlayerList([...playerList].splice(0, players-1));
-        setPlayerNames([...playerNames].splice(0, players-1));
-        setEdit([...edit].splice(0, players-1));
-        setNameToChange([...nameToChange].splice(0, players-1));
-      }
-    }
-
-    const addRound = () =>
-    {  
-      if(rounds<10)
-      {
-        setRounds(rounds+1);
-        setPlayerPoints([...playerPoints, 0]);
-      }
-    }
-    const subRound = () =>
-    {
-      if(rounds > 1)
-      {
-        setRounds(rounds-1);
-        setPlayerPoints([...playerPoints].splice(0, players))
-      }
-    }
-
-    const editPlayer = (idx: number) =>
-    {
-      setEdit(edit.map((x, id) => {
-        if(id==idx)
-      {
-        return !x;
-      }
-      return x;}
-      ))
-    }
-
-    const setNewName = (idx: number) =>
-    {
-      const newName = nameToChange[idx];
-      setPlayerNames(playerNames.map((x, id) =>
-      {
-        if(id==idx)
-            {
-              return newName;
-            }
-            else
-            {
-              return x;
-            }
-      }));
-      setPlayerList(playerList.map((x, id) =>
-      { 
-        if(id==idx)
-            {
-              return {pname: newName, points: x.points, isActive: x.isActive};
-            }
-            else
-            {
-              return x;
-            }
-      }));
-      setNameToChange(nameToChange.map((x, id) => 
-        {
-            if(id==idx)
-            {
-              return "";
-            }
-            else
-            {
-              return x;
-            }
-        }
-      ));
-      setEdit(edit.map((x, id) => {
-        if(id==idx)
-      {
-        return !x;
-      }
-      return x;}
-      ))
-      
-    }
-
-    const updateNamesToChange = (e: any, idx: number) =>
-    {
-      setNameToChange(nameToChange.map((x, id) => 
-        {
-            if(id==idx)
-            {
-              return e.target.value;
-            }
-            else
-            {
-              return x;
-            }
-
-        }
-      ));
-    }
-    
-    
-
     return (
       <All>
         <BiggestTitle><FiMap/> Gra w państwa</BiggestTitle>
         {country == null &&
         <div>
-        <GameConfigCont>
-        <GameConfigBlock>
-          <SmallTitle><span className="material-symbols-outlined">group</span> Liczba graczy</SmallTitle>
-          <Adding>
-          <Plus onClick={addPlayer}>+</Plus> 
-          <NumberOf>{players}</NumberOf>
-          <Plus onClick={subPlayer}>-</Plus>
-          </Adding>
-
-          </GameConfigBlock>
-          <GameConfigBlock>
-          <SmallTitle><AiOutlineCheckCircle/> Liczba rund</SmallTitle>
-          <Adding>
-          <Plus onClick={addRound}>+</Plus> 
-          <NumberOf>{rounds}</NumberOf>
-          <Plus onClick={subRound}>-</Plus> 
-          </Adding>
-        </GameConfigBlock>
-
-        <GameConfigBlock> 
-          {
-          playerNames.map((x, idx) => {return <div>
-            {edit[idx] === false &&          
-              <PlayerDiv><BsPerson/> {x} {edit[idx]}<SmallButton onClick={() => editPlayer(idx)}><CiEdit/></SmallButton ></PlayerDiv>
-            }
-            {edit[idx] === true &&  
-              <PlayerDiv><input type="text"  onChange={(e) => updateNamesToChange(e, idx) }/> <SmallButton onClick={() => setNewName(idx)}><MdDoneOutline/></SmallButton ></PlayerDiv>
-            }
-            </div>
-          })
-          }
-          {edit.map(x => {
-              return <div>
-                {x}
-              </div>
-          })}
         
-        </GameConfigBlock>
-
-        <GameConfigBlock>         
-        <SmallTitle>Poziom Trudności</SmallTitle> 
-        <Hard>
-              <input type="radio"
-                value="0"
-                checked={diff==0}
-                onChange={changeDifficulty} />Wszystko
-        </Hard>
-        <Hard>
-              <input type="radio"
-               value="1"
-               checked={diff==1}
-               onChange={changeDifficulty} />Łatwy
-        </Hard>
-        <Hard>
-              <input type="radio"
-               value="2"
-               checked={diff==2}
-               onChange={changeDifficulty} />Średni
-      </Hard>
-       <Hard>
-              <input type="radio"
-               value="3"
-               checked={diff==3}
-               onChange={changeDifficulty} />Trudny
-        </Hard>
-        </GameConfigBlock>
-        </GameConfigCont>
          <CenterButton> <Button onClick={getRandomCountry}>Start</Button></CenterButton>
         </div>
         }
@@ -514,7 +330,7 @@ const Game = () => {
           </ul>
             {isDraw === false &&
               <div>
-                <BigTitle>Zwycięzca: {playerNames[winner]}</BigTitle>
+                <BigTitle>Zwycięzca: {playerList[winner].pname}</BigTitle>
               </div>
             }
             {isDraw === true &&
@@ -526,7 +342,7 @@ const Game = () => {
           }
 
        {country != null && isWinner === false &&
-        <div>
+      <div>
 
 
     
@@ -537,15 +353,17 @@ const Game = () => {
             <CenterButton> <Button onClick={getRandomCountry}>Następny Gracz </Button></CenterButton>
           </div>
         }
-
+        
         {end===false &&
         <div>
+          
           <GameConfigBlockPlayers>
             <CenterButton> <DInput type="text"  list="list" placeholder={"Wybierz państwo"}  value={name} onChange={(e: any) =>{ setName(e.target.value)}}/>
             <DList id="list">
             {fullList.filter(({name}) => !(guesses.includes(name))).map(({id, name}) => 
                 {return (<DOption value={name}/>)})}
             </DList>
+            
           <Button onClick={submitCountry}>Zgaduje</Button></CenterButton>
           </GameConfigBlockPlayers>
           <GameCont>

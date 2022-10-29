@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import Root from "./routes/root";
 import App from "./routes/add/App";
-import Game from "./routes/game/Game";
+import GameConfig from "./routes/game/GameConfig";
 
 
 const router = createBrowserRouter([
@@ -20,8 +20,8 @@ const router = createBrowserRouter([
     element: <App />,
   },
   {
-    path: "game",
-    element: <Game />,
+    path: "gameconf",
+    element: <GameConfig />,
   },
 ]);
 
